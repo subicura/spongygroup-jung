@@ -68,7 +68,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #cta .cta-btn:hover{transform:translateY(-4px) scale(1.05);background:var(--pink);color:#fff;box-shadow:0 0 60px rgba(236,72,153,0.3)}
 #cta .links{margin-top:32px;opacity:0;display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
 #cta .links a{color:rgba(255,255,255,0.3);font-size:17px;text-decoration:none;transition:color 0.3s}
-#cta .links a:hover{color:var(--purple)}
+#cta .links a:hover{color:#5b6fb0}
 #cta .copyright{position:absolute;bottom:24px;left:0;right:0;opacity:0;font-family:"Space Grotesk",sans-serif;font-size:12px;color:rgba(255,255,255,0.15);letter-spacing:1px}
 #cta .footer-line{margin-top:48px;opacity:0;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:rgba(255,255,255,0.2)}
 .cta-animate{animation:cta-rise 2s cubic-bezier(0.16,1,0.3,1) forwards !important}
@@ -76,6 +76,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 @keyframes glow-pulse{0%,100%{box-shadow:0 0 30px rgba(236,72,153,0.15)}50%{box-shadow:0 0 50px rgba(236,72,153,0.3)}}
 
 /* ─── Replay button ─── */
+#skip{position:fixed;top:20px;left:20px;z-index:80;display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:13px;padding:8px 16px;border-radius:100px;cursor:pointer;font-family:"Space Grotesk",sans-serif;transition:all 0.3s;backdrop-filter:blur(10px)}
+#skip:hover{background:rgba(255,255,255,0.12);color:#fff}
 #replay{position:fixed;top:20px;right:20px;z-index:80;display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:13px;padding:8px 16px;border-radius:100px;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all 0.3s;backdrop-filter:blur(10px)}
 #replay:hover{background:rgba(255,255,255,0.12);color:#fff}
 
@@ -116,12 +118,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     정(情) 시작하기
   </a>
   <div class="links">
-    <a href="puzzle">🧩 정 Puzzle</a>
+    <a href="puzzle">🧩 정 퍼즐</a>
   </div>
   <div class="footer-line">정(情)은 시간이 만든다.</div>
   <div class="copyright">© 2026 SPONGY GROUP</div>
 </div>
 
+<button id="skip">SKIP →</button>
 <button id="replay">↻ Replay</button>
 
 <script>
@@ -301,6 +304,7 @@ function init() {
   ctaEl = document.getElementById('cta');
   introEl = document.getElementById('intro');
   replayEl = document.getElementById('replay');
+  skipEl = document.getElementById('skip');
 
   // Build card DOM
   CARDS.forEach(function(c, i) {
@@ -347,9 +351,11 @@ function init() {
   }, 0);
 
   replayEl.addEventListener('click', function() { replay(); });
+  skipEl.addEventListener('click', function() { showCta(); });
 }
 
 function startSequence() {
+  if (skipEl) skipEl.style.display = "block";
   seqEl.style.display = 'block';
   counterEl.style.display = 'block';
   currentIdx = -1;
@@ -396,6 +402,7 @@ function playFreezeHum() {
 }
 function showCta() {
   running = false;
+  if (skipEl) skipEl.style.display = "none";
   seqEl.style.display = 'none';
   progEl.style.display = 'none';
   counterEl.style.display = 'none';
@@ -419,6 +426,7 @@ function showCta() {
 function replay() {
   ctaEl.style.display = 'none';
   replayEl.style.display = 'none';
+  if (skipEl) skipEl.style.display = 'none';
   // Reset all cards
   var els = ctaEl.children;
   for (var i = 0; i < els.length; i++) els[i].classList.remove('cta-animate');
