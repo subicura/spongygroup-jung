@@ -23,7 +23,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
 }
 #title { color: #e94560; }
 #score { color: rgba(255,255,255,0.4); }
-#round { color: rgba(255,255,255,0.3); }
+#round { color: rgba(255,255,255,0.35); }
 .dot { margin: 0 6px; color: rgba(255,255,255,0.2); }
 
 #field { position: fixed; top: 40px; left: 0; right: 0; bottom: 90px; overflow: hidden; }
@@ -143,6 +143,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
   margin-top: 1rem;
   line-height: 1.7;
 }
+.album-hero .cta-btn {
+  margin-top: 1.2rem;
+}
 .album-hero .hero-divider {
   width: 60px; height: 1px;
   background: linear-gradient(90deg, transparent, #333, transparent);
@@ -150,6 +153,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
 }
 
 @keyframes heroFadeIn { to { opacity: 1; } }
+
+.complete-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10,10,10,0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.complete-overlay.show { opacity: 1; }
+.complete-overlay.fade-out { opacity: 0; }
+.complete-inner { text-align: center; }
+.complete-time {
+  font-size: 3.6rem;
+  font-weight: 200;
+  color: #e94560;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 40px rgba(233,69,96,0.4);
+}
+
 @keyframes glyphPulse {
   0%, 100% { text-shadow: 0 0 40px rgba(233,69,96,0.5), 0 0 80px rgba(233,69,96,0.2); }
   50% { text-shadow: 0 0 60px rgba(233,69,96,0.7), 0 0 120px rgba(233,69,96,0.3); }
@@ -331,11 +355,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
   -webkit-tap-highlight-color: transparent;
 }
 .cta-btn:active { transform: scale(0.95); opacity: 0.85; }
-.cta-btn.share {
-  background: #FEE500;
-  color: #3A1D1D;
-  border: none;
-}
 .cta-btn.jung {
   background: transparent;
   color: #e94560;
@@ -408,6 +427,10 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
   var BATCH = isMobile ? 12 : total;
   var totalMatched = 0;
   var roundIdx = 0;
+  var roundStartTime = 0;
+  var roundTimer = null;
+  var puzzleStartTime = 0;
+  var finalPuzzleTime = '0.0';
   var drag = null;
   var curEls = {};
   var roundMatched = 0;
@@ -526,15 +549,34 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     var start = roundIdx * BATCH;
     var ids = order.slice(start, start + BATCH);
     if (ids.length === 0) return;
-    roundEl.textContent = 'R' + (roundIdx + 1) + '/' + totalRounds;
+    roundStartTime = Date.now();
+    if (roundIdx === 0) puzzleStartTime = roundStartTime;
+    if (roundTimer) clearInterval(roundTimer);
+    roundTimer = setInterval(function() {
+      var t = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
+      roundEl.innerHTML = '<span style="color:#e94560">' + t + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
+    }, 100);
     placePieces(ids);
   }
 
   function nextRound() {
     roundIdx++;
     if (roundIdx * BATCH >= order.length) {
-      // all done — show album!
-      setTimeout(showAlbum, 800);
+      // all done — show completion overlay then album
+      clearInterval(roundTimer);
+      roundTimer = null;
+      var overlay = document.createElement('div');
+      overlay.className = 'complete-overlay';
+      overlay.innerHTML = '<div class="complete-inner"><div class="complete-time">' + finalPuzzleTime + 's</div></div>';
+      document.body.appendChild(overlay);
+      setTimeout(function() { overlay.classList.add('show'); }, 30);
+      setTimeout(function() {
+        overlay.classList.add('fade-out');
+        setTimeout(function() {
+          overlay.remove();
+          showAlbum();
+        }, 600);
+      }, 2800);
       return;
     }
     setTimeout(startRound, 600);
@@ -555,12 +597,12 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     // Hero
     var html = '<div class="album-hero">';
     html += '<div class="jung-glyph">情</div>';
-    html += '<h1>Proof of 정</h1>';
     html += '<div class="hero-desc">';
     html += '정(情)은 함께한 시간이 만드는 따뜻한 감정입니다.<br>';
     html += '24개 타임존, 24명의 낯선 사람들이<br>';
     html += '하나의 릴레이로 연결된 기록.';
     html += '</div>';
+    html += '<a class="cta-btn jung" href="https://t.me/beanie_jungbot" target="_blank">정(情) 참여하기</a>';
     html += '<div class="hero-divider"></div>';
     html += '</div>';
 
@@ -582,11 +624,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     // Footer
     html += '<div class="album-footer">';
     html += '<div class="footer-text">정(情)은 시간이 만든다.</div>';
-    html += '<div class="cta-btns">';
-    html += '<button class="cta-btn share" onclick="shareJung()">🟡 카카오톡 공유</button>';
-    html += '<a class="cta-btn jung" href="https://t.me/beanie_jungbot" target="_blank">✦ 정봇 참여하기</a>';
-    html += '</div>';
-    html += '<div class="footer-copy">jungchain &copy; 2026</div>';
+    html += '<div class="footer-copy">spongy group &copy; 2026</div>';
     html += '</div>';
 
     album.innerHTML = html;
@@ -608,7 +646,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     var lbIdx = -1;
 
     function showLbCard(idx) {
-      if (idx < 0 || idx >= sorted.length) return;
+      idx = ((idx % sorted.length) + sorted.length) % sorted.length;
       lbIdx = idx;
       var p = sorted[idx];
       lbCard.querySelector('.num').textContent = '#' + p.slot;
@@ -811,7 +849,14 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
       // check round complete
       var batchSize = Math.min(BATCH, order.length - roundIdx * BATCH);
       if (roundMatched >= batchSize) {
-        nextRound();
+        clearInterval(roundTimer);
+        roundTimer = null;
+        var elapsed = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
+        if ((roundIdx + 1) * BATCH >= order.length) {
+          finalPuzzleTime = (Math.round((Date.now() - puzzleStartTime) / 100) / 10).toFixed(1);
+        }
+        roundEl.innerHTML = '<span style="color:#e94560">' + elapsed + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
+        setTimeout(nextRound, 1800);
       }
     }, 1200);
   }
@@ -834,19 +879,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
   }
 })();
 
-function shareJung() {
-  var url = 'https://jung.spongygroup.com/puzzle';
-  var text = '당신의 글로벌 인맥은 몇 명입니까? 24개 도시, 24명의 사진. 조각을 맞춰 정을 완성하세요.';
-  if (navigator.share) {
-    navigator.share({ title: '정(情) 퍼즐', text: text, url: url }).catch(function(){});
-  } else {
-    navigator.clipboard.writeText(url).then(function() {
-      alert('링크가 복사됐어요!');
-    }).catch(function() {
-      alert(url);
-    });
-  }
-}
+
 </script>
 </body>
 </html>
