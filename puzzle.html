@@ -585,7 +585,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
           overlay.remove();
           showAlbum();
         }, 600);
-      }, 2800);
+      }, 1500);
       return;
     }
     setTimeout(startRound, 600);
@@ -871,7 +871,8 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
           finalPuzzleTime = (Math.round(roundElapsedMs / 100) / 10).toFixed(1);
         }
         roundEl.innerHTML = '<span style="color:#e94560">' + elapsed + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
-        setTimeout(nextRound, 1800);
+        var isLastRound = (roundIdx + 1) * BATCH >= order.length;
+        setTimeout(nextRound, isLastRound ? 0 : 800);
       }
     }, 1200);
   }
