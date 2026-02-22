@@ -465,7 +465,8 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
 
     var fr = field.getBoundingClientRect();
     var W = fr.width, H = fr.height;
-    var pieceSize = isMobile ? Math.min(90, Math.floor(W / 5)) : Math.min(140, Math.floor(W / 7));
+    var currentMobile = window.matchMedia('(pointer: coarse)').matches && window.innerWidth < 768;
+    var pieceSize = currentMobile ? Math.min(90, Math.floor(W / 5)) : Math.min(140, Math.floor(W / 7));
     var floatRange = 16;
     var pieceH = Math.round(pieceSize * 1.4);
     var cols = Math.floor(W / (pieceSize + 8));
@@ -510,7 +511,8 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
 
     if (drag) { resetDrag(); }
 
-    var pieceSize = isMobile ? Math.min(90, Math.floor(W / 5)) : Math.min(140, Math.floor(W / 7));
+    var currentMobile = window.matchMedia('(pointer: coarse)').matches && window.innerWidth < 768;
+    var pieceSize = currentMobile ? Math.min(90, Math.floor(W / 5)) : Math.min(140, Math.floor(W / 7));
     var floatRange = 16;
     var pieceH = Math.round(pieceSize * 1.4);
 
@@ -715,8 +717,11 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
       else showLbCard(lbIdx - 1);
       lbTouchY = e.touches[0].clientY;
     }, { passive: false });
-    lightbox.addEventListener('touchend', function() {
-      if (!lbScrolled) lightbox.classList.remove('show');
+    lightbox.addEventListener('touchend', function(e) {
+      if (!lbScrolled) {
+        e.preventDefault();
+        lightbox.classList.remove('show');
+      }
     });
 
     // Keyboard arrows
