@@ -571,7 +571,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
       document.body.appendChild(overlay);
       setTimeout(function() { overlay.classList.add('show'); }, 30);
       setTimeout(function() {
-        overlay.classList.add('fade-out');
+        overlay.classList.remove('show');
         setTimeout(function() {
           overlay.remove();
           showAlbum();
@@ -841,6 +841,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
 
     totalMatched++;
     roundMatched++;
+    var matchTime = Date.now();
     scoreEl.textContent = totalMatched + '/' + total;
 
     setTimeout(function() {
@@ -849,11 +850,12 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
       // check round complete
       var batchSize = Math.min(BATCH, order.length - roundIdx * BATCH);
       if (roundMatched >= batchSize) {
+        if (roundTimer === null) return;
         clearInterval(roundTimer);
         roundTimer = null;
-        var elapsed = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
+        var elapsed = (Math.round((matchTime - roundStartTime) / 100) / 10).toFixed(1);
         if ((roundIdx + 1) * BATCH >= order.length) {
-          finalPuzzleTime = (Math.round((Date.now() - puzzleStartTime) / 100) / 10).toFixed(1);
+          finalPuzzleTime = (Math.round((matchTime - puzzleStartTime) / 100) / 10).toFixed(1);
         }
         roundEl.innerHTML = '<span style="color:#e94560">' + elapsed + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
         setTimeout(nextRound, 1800);
