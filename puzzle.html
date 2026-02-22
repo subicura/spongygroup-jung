@@ -429,7 +429,7 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
   var roundIdx = 0;
   var roundStartTime = 0;
   var roundTimer = null;
-  var puzzleStartTime = 0;
+  var roundElapsedMs = 0;
   var finalPuzzleTime = '0.0';
   var drag = null;
   var curEls = {};
@@ -550,7 +550,6 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     var ids = order.slice(start, start + BATCH);
     if (ids.length === 0) return;
     roundStartTime = Date.now();
-    if (roundIdx === 0) puzzleStartTime = roundStartTime;
     if (roundTimer) clearInterval(roundTimer);
     roundTimer = setInterval(function() {
       var t = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
@@ -853,9 +852,10 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
         if (roundTimer === null) return;
         clearInterval(roundTimer);
         roundTimer = null;
+        roundElapsedMs += (matchTime - roundStartTime);
         var elapsed = (Math.round((matchTime - roundStartTime) / 100) / 10).toFixed(1);
         if ((roundIdx + 1) * BATCH >= order.length) {
-          finalPuzzleTime = (Math.round((matchTime - puzzleStartTime) / 100) / 10).toFixed(1);
+          finalPuzzleTime = (Math.round(roundElapsedMs / 100) / 10).toFixed(1);
         }
         roundEl.innerHTML = '<span style="color:#e94560">' + elapsed + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
         setTimeout(nextRound, 1800);
