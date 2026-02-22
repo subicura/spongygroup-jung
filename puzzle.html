@@ -549,13 +549,21 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     var start = roundIdx * BATCH;
     var ids = order.slice(start, start + BATCH);
     if (ids.length === 0) return;
-    roundStartTime = Date.now();
     if (roundTimer) clearInterval(roundTimer);
-    roundTimer = setInterval(function() {
-      var t = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
-      roundEl.innerHTML = '<span style="color:#e94560">' + t + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
-    }, 100);
+    roundTimer = null;
+    roundStartTime = Date.now();
+    roundEl.innerHTML = totalRounds > 1 ? 'R ' + (roundIdx + 1) + '/' + totalRounds : '';
     placePieces(ids);
+    setTimeout(function() {
+      var batchSize = Math.min(BATCH, order.length - roundIdx * BATCH);
+      if (roundTimer === null && roundMatched < batchSize) {
+        roundStartTime = Date.now();
+        roundTimer = setInterval(function() {
+          var t = (Math.round((Date.now() - roundStartTime) / 100) / 10).toFixed(1);
+          roundEl.innerHTML = '<span style="color:#e94560">' + t + 's</span>' + (totalRounds > 1 ? '<span class="dot">·</span>R ' + (roundIdx + 1) + '/' + totalRounds : '');
+        }, 100);
+      }
+    }, 500);
   }
 
   function nextRound() {
