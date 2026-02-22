@@ -24,19 +24,23 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #intro.gone{opacity:0;pointer-events:none}
 #intro .chars{position:relative;display:flex;align-items:baseline;justify-content:center;gap:clamp(8px,2vw,16px)}
 #intro .big-char{font-family:'Noto Sans KR',serif;font-size:clamp(120px,30vw,280px);font-weight:700;opacity:0;transform:scale(1.4);line-height:1}
-#intro .big-char.hanja{animation:char-slam 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;color:#fff}
-#intro .big-char.hangul{animation:char-slam 0.5s 1.0s cubic-bezier(0.16,1,0.3,1) forwards;color:var(--pink)}
+#intro .big-char.hanja{animation:char-slam 0.5s 0.7s cubic-bezier(0.16,1,0.3,1) forwards;color:#fff}
+#intro .big-char.hangul{animation:char-slam 0.5s 1.5s cubic-bezier(0.16,1,0.3,1) forwards;color:var(--pink)}
 #intro .slash{font-family:'Space Grotesk',sans-serif;font-size:clamp(40px,10vw,100px);font-weight:300;opacity:0;color:rgba(255,255,255,0.15);animation:intro-fade 0.3s 0.8s ease forwards}
 #intro .sub{opacity:0;animation:intro-fade 0.8s 1.8s ease forwards;font-size:clamp(14px,3vw,20px);color:rgba(255,255,255,0.4);margin-top:16px;font-weight:300;letter-spacing:2px}
-#intro .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:101}
-#intro .flash.pop1{animation:screen-flash 0.3s 0.3s ease-out forwards}
-#intro .flash.pop2{animation:screen-flash 0.3s 1.0s ease-out forwards}
+#intro .flash{position:fixed;inset:0;opacity:0;pointer-events:none;z-index:101}
+#intro .flash.pop1{background:#fff}
+#intro .flash.pop2{background:var(--pink)}
+#intro .flash.pop1{animation:screen-flash 0.3s 0.7s ease-out forwards}
+#intro .flash.pop2{animation:screen-flash 0.3s 1.5s ease-out forwards}
 @keyframes char-slam{from{opacity:0;transform:scale(1.4)}to{opacity:1;transform:scale(1)}}
 @keyframes screen-flash{0%{opacity:0.7}100%{opacity:0}}
 @keyframes intro-fade{to{opacity:1}}
 
+#vol-toggle{position:fixed;bottom:20px;right:20px;z-index:200;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:opacity 0.3s}
+#vol-toggle:hover{background:rgba(255,255,255,0.2)}
 #mid-text{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;align-items:center;justify-content:center;text-align:center;padding:24px}
-#mid-text .msg{font-family:'Noto Sans KR',sans-serif;font-size:clamp(24px,6vw,44px);font-weight:500;color:#fff;opacity:0;transform:translateY(15px);animation:none}
+#mid-text .msg{font-family:'Noto Sans KR',sans-serif;font-size:clamp(32px,8vw,56px);font-weight:500;color:#fff;opacity:0;transform:translateY(15px);animation:none}
 #mid-text .msg.show{animation:cta-rise 0.8s cubic-bezier(0.16,1,0.3,1) forwards}
 #mid-text.gone{opacity:0;transition:opacity 0.6s ease}
 /* ─── SEQUENCE ─── */
@@ -54,7 +58,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 /* Progress bar */
 #progress{position:fixed;bottom:0;left:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--pink));z-index:60;width:0;transition:width 0.3s linear}
-#counter{position:fixed;bottom:16px;right:20px;z-index:60;font-family:'Space Grotesk',monospace;font-size:13px;color:rgba(255,255,255,0.3);display:none}
+#counter{position:fixed;bottom:16px;left:0;right:0;z-index:60;font-family:'Space Grotesk',monospace;font-size:13px;color:rgba(255,255,255,0.3);display:none;text-align:center}
 
 /* ─── CTA (after sequence) ─── */
 #cta{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;background:var(--bg);text-align:center;padding:24px}
@@ -65,6 +69,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #cta .links{margin-top:32px;opacity:0;display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
 #cta .links a{color:rgba(255,255,255,0.3);font-size:17px;text-decoration:none;transition:color 0.3s}
 #cta .links a:hover{color:var(--purple)}
+#cta .copyright{position:absolute;bottom:24px;left:0;right:0;opacity:0;font-family:"Space Grotesk",sans-serif;font-size:12px;color:rgba(255,255,255,0.15);letter-spacing:1px}
 #cta .footer-line{margin-top:48px;opacity:0;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:rgba(255,255,255,0.2)}
 .cta-animate{animation:cta-rise 2s cubic-bezier(0.16,1,0.3,1) forwards !important}
 @keyframes cta-rise{to{opacity:1;transform:translateY(0)}}
@@ -75,13 +80,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #replay:hover{background:rgba(255,255,255,0.12);color:#fff}
 
 /* Skip button */
-#skip{position:fixed;bottom:16px;left:20px;z-index:60;display:none;background:none;border:none;color:rgba(255,255,255,0.2);font-size:13px;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:color 0.3s}
-#skip:hover{color:rgba(255,255,255,0.5)}
 </style>
 </head>
 <body>
 
 <!-- INTRO -->
+<button id="vol-toggle" onclick="toggleMute()" aria-label="Toggle sound">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path id="vol-waves" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" style="display:none"/></svg>
+</button>
 <div id="intro">
   <div class="flash pop1"></div>
   <div class="flash pop2"></div>
@@ -93,14 +99,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 
 <!-- MID TEXT -->
 <div id="mid-text">
-  <div class="msg">지금 당신 주위에 <span style="color:#dc2626">빨강</span>을 보여주세요!</div>
+  <div class="msg">지금 당신 주위의<br><span style="color:#dc2626">빨강</span>을 보여주세요!</div>
 </div>
 
 <!-- SEQUENCE -->
 <div id="sequence"></div>
 <div id="progress"></div>
 <div id="counter"></div>
-<button id="skip">SKIP →</button>
 
 <!-- CTA -->
 <div id="cta">
@@ -114,6 +119,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     <a href="puzzle">🧩 정 Puzzle</a>
   </div>
   <div class="footer-line">정(情)은 시간이 만든다.</div>
+  <div class="copyright">© 2026 SPONGY GROUP</div>
 </div>
 
 <button id="replay">↻ Replay</button>
@@ -128,13 +134,172 @@ var seqEl, progEl, counterEl, ctaEl, introEl, skipEl, replayEl;
 var cardEls = [];
 var running = false;
 
+
+// ─── Web Audio Synth ───
+var audioCtx = null;
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playSlam(freq, vol) {
+  if (!audioCtx || isMuted) return;
+  var now = audioCtx.currentTime;
+  // Kick drum: sharp attack, fast pitch drop
+  var kick = audioCtx.createOscillator();
+  var kickGain = audioCtx.createGain();
+  kick.connect(kickGain);
+  kickGain.connect(audioCtx.destination);
+  kick.type = 'sine';
+  kick.frequency.setValueAtTime(300, now);
+  kick.frequency.exponentialRampToValueAtTime(50, now + 0.07);
+  kickGain.gain.setValueAtTime(vol * 1.5, now);
+  kickGain.gain.setValueAtTime(vol * 1.2, now + 0.02);
+  kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+  kick.start(now);
+  kick.stop(now + 0.35);
+  // Transient click for attack
+  var click = audioCtx.createOscillator();
+  var clickGain = audioCtx.createGain();
+  click.connect(clickGain);
+  clickGain.connect(audioCtx.destination);
+  click.type = 'square';
+  click.frequency.setValueAtTime(1000, now);
+  clickGain.gain.setValueAtTime(vol * 0.4, now);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+  click.start(now);
+  click.stop(now + 0.015);
+}
+
+
+function playWhoosh() {
+  if (!audioCtx || isMuted) return;
+  var now = audioCtx.currentTime;
+  // Sweep tone — rising whoosh
+  var sweep = audioCtx.createOscillator();
+  var sweepGain = audioCtx.createGain();
+  sweep.connect(sweepGain);
+  sweepGain.connect(audioCtx.destination);
+  sweep.type = 'sine';
+  sweep.frequency.setValueAtTime(100, now);
+  sweep.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+  sweep.frequency.exponentialRampToValueAtTime(200, now + 0.4);
+  sweepGain.gain.setValueAtTime(0.2, now);
+  sweepGain.gain.linearRampToValueAtTime(0.25, now + 0.15);
+  sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  sweep.start(now);
+  sweep.stop(now + 0.4);
+  // Noise layer via detuned oscillators
+  var n1 = audioCtx.createOscillator();
+  var n1g = audioCtx.createGain();
+  n1.connect(n1g);
+  n1g.connect(audioCtx.destination);
+  n1.type = 'sawtooth';
+  n1.frequency.setValueAtTime(150, now);
+  n1.frequency.exponentialRampToValueAtTime(1200, now + 0.2);
+  n1g.gain.setValueAtTime(0.05, now);
+  n1g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+  n1.start(now);
+  n1.stop(now + 0.3);
+}
+
+function playTextReveal() {
+  if (!audioCtx || isMuted) return;
+  var now = audioCtx.currentTime;
+  // Soft shimmer
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(440, now);
+  osc.frequency.linearRampToValueAtTime(660, now + 0.3);
+  gain.gain.setValueAtTime(0.06, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+  osc.start(now);
+  osc.stop(now + 0.8);
+}
+
+function playCardHit(idx) {
+  if (!audioCtx || isMuted) return;
+  var t = idx / (CARDS.length - 1);
+  var now = audioCtx.currentTime;
+  // Punchy mid-bass hit
+  var bass = audioCtx.createOscillator();
+  var bassGain = audioCtx.createGain();
+  bass.connect(bassGain);
+  bassGain.connect(audioCtx.destination);
+  bass.type = 'sine';
+  bass.frequency.setValueAtTime(150 + t * 100, now);
+  bass.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+  bassGain.gain.setValueAtTime(0.18 + t * 0.1, now);
+  bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+  bass.start(now);
+  bass.stop(now + 0.15);
+  // Snap click
+  var snap = audioCtx.createOscillator();
+  var snapGain = audioCtx.createGain();
+  snap.connect(snapGain);
+  snapGain.connect(audioCtx.destination);
+  snap.type = 'square';
+  snap.frequency.setValueAtTime(800 + t * 400, now);
+  snapGain.gain.setValueAtTime(0.04 + t * 0.03, now);
+  snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+  snap.start(now);
+  snap.stop(now + 0.03);
+}
+
+function playDrone() {
+  if (!audioCtx || isMuted) return;
+  // Low ambient drone during sequence
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(55, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 15);
+  gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 30);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 30);
+  // Second harmonic
+  var osc2 = audioCtx.createOscillator();
+  var gain2 = audioCtx.createGain();
+  osc2.connect(gain2);
+  gain2.connect(audioCtx.destination);
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(82.5, audioCtx.currentTime);
+  gain2.gain.setValueAtTime(0.03, audioCtx.currentTime);
+  gain2.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 15);
+  gain2.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 30);
+  osc2.start();
+  osc2.stop(audioCtx.currentTime + 30);
+}
+
+function playCtaChime() {
+  if (!audioCtx || isMuted) return;
+  var notes = [523, 659, 784]; // C5, E5, G5
+  notes.forEach(function(freq, i) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.15);
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + i * 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.15 + 1.5);
+    osc.start(audioCtx.currentTime + i * 0.15);
+    osc.stop(audioCtx.currentTime + i * 0.15 + 1.5);
+  });
+}
+
 function init() {
   seqEl = document.getElementById('sequence');
   progEl = document.getElementById('progress');
   counterEl = document.getElementById('counter');
   ctaEl = document.getElementById('cta');
   introEl = document.getElementById('intro');
-  skipEl = document.getElementById('skip');
   replayEl = document.getElementById('replay');
 
   // Build card DOM
@@ -152,34 +317,41 @@ function init() {
     cardEls.push(div);
   });
 
-  // Start after intro
+  // Auto-start with audio init on any interaction
   var midEl = document.getElementById('mid-text');
+  
+  
   setTimeout(function() {
-    introEl.classList.add('gone');
+    
+    // Sound synced with CSS: hanja at 0.7s, hangul at 1.2s
+    setTimeout(function() { playWhoosh(); }, 700);
+    setTimeout(function() { playSlam(100, 0.3); }, 1500);
     setTimeout(function() {
-      introEl.style.display = 'none';
-      midEl.style.display = 'flex';
+      introEl.classList.add('gone');
       setTimeout(function() {
-        midEl.querySelector('.msg').classList.add('show');
-      }, 100);
-      setTimeout(function() {
-        midEl.classList.add('gone');
+        introEl.style.display = 'none';
+        midEl.style.display = 'flex';
         setTimeout(function() {
-          midEl.style.display = 'none';
-          startSequence();
-        }, 600);
-      }, 2000);
-    }, 800);
-  }, 2200);
+          midEl.querySelector('.msg').classList.add('show');
+          playTextReveal();
+        }, 100);
+        setTimeout(function() {
+          midEl.classList.add('gone');
+          setTimeout(function() {
+            midEl.style.display = 'none';
+            startSequence();
+          }, 400);
+        }, 2000);
+      }, 600);
+    }, 2300);
+  }, 0);
 
-  skipEl.addEventListener('click', function() { showCta(); });
   replayEl.addEventListener('click', function() { replay(); });
 }
 
 function startSequence() {
   seqEl.style.display = 'block';
   counterEl.style.display = 'block';
-  skipEl.style.display = 'block';
   currentIdx = -1;
   running = true;
   nextCard();
@@ -199,6 +371,7 @@ function nextCard() {
     lastCard.classList.remove('out');
     lastCard.classList.add('active');
     lastCard.style.transition = 'opacity 1.2s ease';
+    playFreezeHum();
     setTimeout(function() {
       lastCard.style.opacity = '0';
       setTimeout(showCta, 1600);
@@ -210,6 +383,7 @@ function nextCard() {
     if (!running) return;
     cardEls[currentIdx].classList.remove('out');
     cardEls[currentIdx].classList.add('active');
+    playCardHit(currentIdx);
     progEl.style.width = ((currentIdx + 1) / CARDS.length * 100) + '%';
     counterEl.textContent = (currentIdx + 1) + ' / ' + CARDS.length;
     // Schedule next
@@ -217,12 +391,14 @@ function nextCard() {
   }, currentIdx === 0 ? 0 : FADE_OUT);
 }
 
+function playFreezeHum() {
+  // silence — dramatic pause
+}
 function showCta() {
   running = false;
   seqEl.style.display = 'none';
   progEl.style.display = 'none';
   counterEl.style.display = 'none';
-  skipEl.style.display = 'none';
   ctaEl.style.display = 'flex';
   replayEl.style.display = 'block';
   // Stagger CTA animations
@@ -232,11 +408,12 @@ function showCta() {
       setTimeout(function() { el.classList.add('cta-animate'); }, delay);
     })(els[i], i * 1200);
   }
-  // Glow pulse on button after it appears
+  // Sound + glow when button appears
   setTimeout(function() {
+    playCtaChime();
     var btn = ctaEl.querySelector('.cta-btn');
     if (btn) btn.style.animation = 'glow-pulse 3s ease-in-out infinite';
-  }, 1500);
+  }, 2400);
 }
 
 function replay() {
@@ -245,10 +422,52 @@ function replay() {
   // Reset all cards
   var els = ctaEl.children;
   for (var i = 0; i < els.length; i++) els[i].classList.remove('cta-animate');
-  cardEls.forEach(function(el) { el.classList.remove('active', 'out'); });
+  cardEls.forEach(function(el) { el.classList.remove('active', 'out'); el.style.opacity = ''; });
   progEl.style.display = 'block';
   progEl.style.width = '0';
-  startSequence();
+  // Replay from intro (情/정)
+  introEl.style.display = 'flex';
+  introEl.classList.remove('gone');
+  introEl.style.opacity = '1';
+  var midEl = document.getElementById('mid-text');
+  midEl.style.display = 'none';
+  midEl.classList.remove('gone');
+  midEl.querySelector('.msg').classList.remove('show');
+  seqEl.style.display = 'none';
+  setTimeout(function() { playWhoosh(); }, 700);
+  setTimeout(function() { playSlam(100, 0.3); }, 1500);
+  setTimeout(function() {
+    introEl.classList.add('gone');
+    setTimeout(function() {
+      introEl.style.display = 'none';
+      midEl.style.display = 'flex';
+      setTimeout(function() {
+        midEl.querySelector('.msg').classList.add('show');
+        playTextReveal();
+      }, 100);
+      setTimeout(function() {
+        midEl.classList.add('gone');
+        setTimeout(function() {
+          midEl.style.display = 'none';
+          startSequence();
+        }, 600);
+      }, 2400);
+    }, 800);
+  }, 2400);
+}
+
+var isMuted = true;
+function toggleMute() {
+  isMuted = !isMuted;
+  var waves = document.getElementById('vol-waves');
+  if (isMuted) {
+    if (audioCtx) audioCtx.suspend();
+    waves.style.display = 'none';
+  } else {
+    if (!audioCtx) initAudio();
+    if (audioCtx) audioCtx.resume();
+    waves.style.display = '';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
