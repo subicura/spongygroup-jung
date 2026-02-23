@@ -365,7 +365,7 @@ function initAudio() {
 }
 
 function playSlam(freq, vol) {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Kick drum: sharp attack, fast pitch drop
   var kick = audioCtx.createOscillator();
@@ -395,7 +395,7 @@ function playSlam(freq, vol) {
 
 
 function playWhoosh() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Sweep tone — rising whoosh
   var sweep = audioCtx.createOscillator();
@@ -426,7 +426,7 @@ function playWhoosh() {
 }
 
 function playTextReveal() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Soft shimmer
   var osc = audioCtx.createOscillator();
@@ -443,7 +443,7 @@ function playTextReveal() {
 }
 
 function playCardHit(idx) {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var t = idx / (CARDS.length - 1);
   var now = audioCtx.currentTime;
   // Punchy mid-bass hit
@@ -475,7 +475,7 @@ function playCardHit(idx) {
 }
 
 function playDrone() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   // Low ambient drone during sequence
   var osc = audioCtx.createOscillator();
   var gain = audioCtx.createGain();
@@ -503,7 +503,7 @@ function playDrone() {
 }
 
 function playCtaChime() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var notes = [523, 659, 784]; // C5, E5, G5
   notes.forEach(function(freq, i) {
     var osc = audioCtx.createOscillator();
@@ -702,6 +702,16 @@ function toggleMute() {
     waves.style.display = '';
   }
 }
+
+function resumeAudioOnGesture() {
+  if (!isMuted && audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  document.removeEventListener('touchstart', resumeAudioOnGesture);
+  document.removeEventListener('click', resumeAudioOnGesture);
+}
+document.addEventListener('touchstart', resumeAudioOnGesture, {once: true});
+document.addEventListener('click', resumeAudioOnGesture, {once: true});
 
 document.addEventListener('DOMContentLoaded', function() {
   init(); initLang();
