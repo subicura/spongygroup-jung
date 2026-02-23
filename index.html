@@ -688,10 +688,8 @@ function replay() {
 }
 
 var isMuted = true;
-try { if (localStorage.getItem('jung-muted') === '0') isMuted = false; } catch(e) {}
 function toggleMute() {
   isMuted = !isMuted;
-  try { localStorage.setItem('jung-muted', isMuted ? '1' : '0'); } catch(e) {}
   var waves = document.getElementById('vol-waves');
   if (isMuted) {
     if (audioCtx) audioCtx.suspend();
@@ -703,24 +701,8 @@ function toggleMute() {
   }
 }
 
-function resumeAudioOnGesture() {
-  if (!isMuted && audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  document.removeEventListener('touchstart', resumeAudioOnGesture);
-  document.removeEventListener('click', resumeAudioOnGesture);
-}
-document.addEventListener('touchstart', resumeAudioOnGesture, {once: true});
-document.addEventListener('click', resumeAudioOnGesture, {once: true});
-
 document.addEventListener('DOMContentLoaded', function() {
   init(); initLang();
-  if (!isMuted) {
-    var waves = document.getElementById('vol-waves');
-    if (waves) waves.style.display = '';
-    if (!audioCtx) initAudio();
-    if (audioCtx) audioCtx.resume();
-  }
 });
 </script>
 
