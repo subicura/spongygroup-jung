@@ -232,23 +232,26 @@ function playCardHit(idx) {
   bass.connect(bassGain);
   bassGain.connect(audioCtx.destination);
   bass.type = 'sine';
-  bass.frequency.setValueAtTime(150 + t * 100, now);
+  bass.frequency.setValueAtTime(150 + t * 200, now);
   bass.frequency.exponentialRampToValueAtTime(80, now + 0.12);
-  bassGain.gain.setValueAtTime(0.18 + t * 0.1, now);
+  bassGain.gain.setValueAtTime(0.001, now);
+  bassGain.gain.linearRampToValueAtTime(0.18 + t * 0.1, now + 0.003);
   bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
   bass.start(now);
-  bass.stop(now + 0.15);
-  // Snap click
-  var snap = audioCtx.createOscillator();
-  var snapGain = audioCtx.createGain();
-  snap.connect(snapGain);
-  snapGain.connect(audioCtx.destination);
-  snap.type = 'square';
-  snap.frequency.setValueAtTime(800 + t * 400, now);
-  snapGain.gain.setValueAtTime(0.04 + t * 0.03, now);
-  snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-  snap.start(now);
-  snap.stop(now + 0.03);
+  bass.stop(now + 0.16);
+  // Water drop pluck
+  var plk = audioCtx.createOscillator();
+  var plkGain = audioCtx.createGain();
+  plk.connect(plkGain);
+  plkGain.connect(audioCtx.destination);
+  plk.type = 'sine';
+  plk.frequency.setValueAtTime(1200 + t * 1200, now);
+  plk.frequency.exponentialRampToValueAtTime(400 + t * 200, now + 0.08);
+  plkGain.gain.setValueAtTime(0.001, now);
+  plkGain.gain.linearRampToValueAtTime(0.12 + t * 0.08, now + 0.001);
+  plkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  plk.start(now);
+  plk.stop(now + 0.12);
 }
 
 function playDrone() {
@@ -348,7 +351,7 @@ function init() {
         }, 2000);
       }, 600);
     }, 2300);
-  }, 0);
+  }, 1000);
 
   replayEl.addEventListener('click', function() { replay(); });
   skipEl.addEventListener('click', function() { showCta(); });
