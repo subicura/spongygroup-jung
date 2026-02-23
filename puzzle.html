@@ -645,7 +645,8 @@ function pzInitAudio() {
   if (pzAudioCtx.state === 'suspended') pzAudioCtx.resume();
 }
 function playCoin() {
-  if (!pzAudioCtx || pzAudioCtx.state !== 'running') return;
+  if (!pzAudioCtx) pzInitAudio();
+  if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume(); return; }
   var notes = [523, 659, 784, 1047];
   notes.forEach(function(freq, i) {
     var osc = pzAudioCtx.createOscillator();
@@ -660,7 +661,8 @@ function playCoin() {
   });
 }
 function playBuzz() {
-  if (!pzAudioCtx || pzAudioCtx.state !== 'running') return;
+  if (!pzAudioCtx) pzInitAudio();
+  if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume(); return; }
   var osc = pzAudioCtx.createOscillator();
   var gain = pzAudioCtx.createGain();
   osc.type = 'sawtooth';
@@ -672,7 +674,8 @@ function playBuzz() {
   osc.start(t); osc.stop(t + 0.25);
 }
 function playFanfare() {
-  if (!pzAudioCtx || pzAudioCtx.state !== 'running') return;
+  if (!pzAudioCtx) pzInitAudio();
+  if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume(); return; }
   var notes = [523, 659, 784, 1047, 784, 1047];
   notes.forEach(function(freq, i) {
     var osc = pzAudioCtx.createOscillator();
