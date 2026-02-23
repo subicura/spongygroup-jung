@@ -713,31 +713,19 @@ function playFanfare() {
   var finalPuzzleTime = '0.0';
   var drag = null;
 
-  // ─── Audio ───
-  var audioCtx = null;
-  function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-  }
-  document.addEventListener('touchstart', initAudio, { once: false });
-  document.addEventListener('click', initAudio, { once: false });
-
+  // ─── Audio (uses global pzAudioCtx) ───
   function playMatch(idx) {
-    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
+    if (!pzAudioCtx) pzInitAudio();
+    if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume().then(function(){ playMatch(idx); }); return; }
     var t = idx / (total - 1);
-    var now = audioCtx.currentTime;
-    // Coin arpeggio — 3 quick rising notes
+    var now = pzAudioCtx.currentTime;
     var base = 520 + t * 400;
     var notes = [base, base * 1.25, base * 1.5];
     notes.forEach(function(freq, i) {
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
+      var osc = pzAudioCtx.createOscillator();
+      var gain = pzAudioCtx.createGain();
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(pzAudioCtx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now + i * 0.06);
       osc.frequency.exponentialRampToValueAtTime(freq * 0.95, now + i * 0.06 + 0.12);
@@ -750,12 +738,13 @@ function playFanfare() {
   }
 
   function playWrong() {
-    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
-    var now = audioCtx.currentTime;
-    var osc = audioCtx.createOscillator();
-    var gain = audioCtx.createGain();
+    if (!pzAudioCtx) pzInitAudio();
+    if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume().then(function(){ playWrong(); }); return; }
+    var now = pzAudioCtx.currentTime;
+    var osc = pzAudioCtx.createOscillator();
+    var gain = pzAudioCtx.createGain();
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(pzAudioCtx.destination);
     osc.type = 'sine';
     osc.frequency.setValueAtTime(250, now);
     osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
@@ -767,14 +756,15 @@ function playFanfare() {
   }
 
   function playClear() {
-    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
-    var now = audioCtx.currentTime;
+    if (!pzAudioCtx) pzInitAudio();
+    if (pzAudioCtx.state !== 'running') { pzAudioCtx.resume().then(function(){ playClear(); }); return; }
+    var now = pzAudioCtx.currentTime;
     var notes = [523, 659, 784, 1047];
     notes.forEach(function(freq, i) {
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
+      var osc = pzAudioCtx.createOscillator();
+      var gain = pzAudioCtx.createGain();
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(pzAudioCtx.destination);
       osc.type = 'sine';
       osc.frequency.value = freq;
       var t = now + i * 0.12;
@@ -1134,7 +1124,6 @@ function playFanfare() {
   function onStart(e) {
     if (!pzAudioCtx) pzInitAudio();
     else if (pzAudioCtx.state !== 'running') pzAudioCtx.resume();
-    initAudio();
     var piece = (e.target || e.srcElement).closest('.piece');
     if (!piece || piece.dataset.type !== 'sticker' || piece.classList.contains('matched')) return;
     e.preventDefault();
@@ -1266,8 +1255,6 @@ function playFanfare() {
   }
 
   // events
-  field.addEventListener('mousedown', function(e) { pzInitAudio(); }, {once:true});
-  field.addEventListener('touchstart', function(e) { pzInitAudio(); }, {once:true});
   field.addEventListener('mousedown', onStart);
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseup', onEnd);
