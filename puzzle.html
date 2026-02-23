@@ -46,8 +46,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
 #title { color: #e94560; }
 #refresh-btn { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); text-decoration: none; font-size: 16px; pointer-events: auto; cursor: pointer; background: none; border: none; }
 #refresh-btn:hover { color: #fff; }
-#album-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; pointer-events: auto; transition: color 0.3s; }
-#album-arrow:hover { color: #fff; }
 #score { color: rgba(255,255,255,0.4); }
 #round { color: rgba(255,255,255,0.35); }
 .dot { margin: 0 6px; color: rgba(255,255,255,0.2); }
@@ -424,7 +422,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
 /* RTL support */
 [dir=rtl] #refresh-btn { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); text-decoration: none; font-size: 16px; pointer-events: auto; cursor: pointer; background: none; border: none; }
 #refresh-btn:hover { color: #fff; }
-#album-arrow { right: auto; left: 16px; }
 [dir=rtl] #lang-btn { left: auto; right: 20px; }
 [dir=rtl] #lang-picker { left: auto; right: 20px; }
 </style>
@@ -440,7 +437,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
   <div class="sub" data-i18n="puzzle_start_sub">24개 도시의 조각을 맞춰보세요</div>
   <button class="start-btn" id="start-btn" data-i18n="puzzle_start_btn">시작하기</button>
 </div>
-<div id="header"><button id="refresh-btn" onclick="location.reload()" title="Restart">↻</button><span id="title" data-i18n="page_title">정(情) 퍼즐</span><span class="dot">·</span><span id="score">0/24</span><span class="dot">·</span><span id="round"></span><a id="album-arrow" href="javascript:void(0)" onclick="showAlbum()">→</a></div>
+<div id="header"><button id="refresh-btn" onclick="location.reload()" title="Restart">↻</button><span id="title" data-i18n="page_title">정(情) 퍼즐</span><span class="dot">·</span><span id="score">0/24</span><span class="dot">·</span><span id="round"></span></div>
 <div id="field"></div>
 <div id="reveal">
   <img id="reveal-img" src="">
