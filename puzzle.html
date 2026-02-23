@@ -1131,6 +1131,8 @@ function playFanfare() {
   }
 
   function onStart(e) {
+    if (!pzAudioCtx) pzInitAudio();
+    else if (pzAudioCtx.state !== 'running') pzAudioCtx.resume();
     var piece = (e.target || e.srcElement).closest('.piece');
     if (!piece || piece.dataset.type !== 'sticker' || piece.classList.contains('matched')) return;
     e.preventDefault();
