@@ -727,7 +727,7 @@ function playFanfare() {
   document.addEventListener('click', initAudio, { once: false });
 
   function playMatch(idx) {
-    if (!audioCtx) return;
+    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
     var t = idx / (total - 1);
     var now = audioCtx.currentTime;
     // Coin arpeggio — 3 quick rising notes
@@ -750,7 +750,7 @@ function playFanfare() {
   }
 
   function playWrong() {
-    if (!audioCtx) return;
+    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
     var now = audioCtx.currentTime;
     var osc = audioCtx.createOscillator();
     var gain = audioCtx.createGain();
@@ -767,7 +767,7 @@ function playFanfare() {
   }
 
   function playClear() {
-    if (!audioCtx) return;
+    if (!audioCtx) { initAudio(); if (!audioCtx || audioCtx.state !== 'running') return; }
     var now = audioCtx.currentTime;
     var notes = [523, 659, 784, 1047];
     notes.forEach(function(freq, i) {
@@ -1133,6 +1133,7 @@ function playFanfare() {
   function onStart(e) {
     if (!pzAudioCtx) pzInitAudio();
     else if (pzAudioCtx.state !== 'running') pzAudioCtx.resume();
+    initAudio();
     var piece = (e.target || e.srcElement).closest('.piece');
     if (!piece || piece.dataset.type !== 'sticker' || piece.classList.contains('matched')) return;
     e.preventDefault();
