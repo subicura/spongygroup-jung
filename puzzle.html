@@ -122,6 +122,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; t
 }
 #album.show { display: block; }
 
+.album-nav {
+  position: sticky; top: 0; z-index: 510;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.95) 60%, transparent);
+  pointer-events: none;
+}
+.album-nav a {
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  font-size: 18px;
+  pointer-events: auto;
+  transition: color 0.3s;
+}
+.album-nav a:hover { color: #fff; }
+
 .album-hero {
   text-align: center;
   padding: 3rem 1rem 1.5rem;
@@ -442,11 +458,15 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
   // ─── Audio ───
   var audioCtx = null;
   function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
   }
-  document.addEventListener('touchstart', initAudio, { once: true });
-  document.addEventListener('click', initAudio, { once: true });
+  document.addEventListener('touchstart', initAudio, { once: false });
+  document.addEventListener('click', initAudio, { once: false });
 
   function playMatch(idx) {
     if (!audioCtx) return;
@@ -667,6 +687,16 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
   }
 
   window.showAlbum = showAlbum;
+  function closeAlbum() {
+    var album = document.getElementById('album');
+    album.classList.remove('show');
+    album.innerHTML = '';
+    document.getElementById('header').style.display = '';
+    shelf.style.display = '';
+    initField();
+  }
+  window.closeAlbum = closeAlbum;
+
   function showAlbum() {
     field.innerHTML = '';
     shelf.style.display = 'none';
@@ -680,7 +710,11 @@ var PIECES = [{"id":0,"city":"🇰🇷 Seoul","sticker":"data:image/png;base64,i
     function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     // Hero
-    var html = '<div class="album-hero">';
+    var html = '<div class="album-nav">';
+    html += '<a href="javascript:void(0)" onclick="closeAlbum()">←</a>';
+    html += '<a href="./">→</a>';
+    html += '</div>';
+    html += '<div class="album-hero">';
     html += '<div class="jung-glyph">情</div>';
     html += '<div class="hero-desc">';
     html += '정(情)은 함께한 시간이 만드는 따뜻한 감정입니다.<br>';
