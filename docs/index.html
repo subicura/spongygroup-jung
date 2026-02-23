@@ -118,7 +118,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
     정(情) 시작하기
   </a>
   <div class="links">
-    <a href="puzzle">🧩 정 퍼즐</a>
+    <a href="puzzle" onclick="history.replaceState(null,'','#cta')">🧩 정 퍼즐</a>
   </div>
   <div class="footer-line">정(情)은 시간이 만든다.</div>
   <div class="copyright">© 2026 SPONGY GROUP</div>
@@ -145,7 +145,7 @@ function initAudio() {
 }
 
 function playSlam(freq, vol) {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Kick drum: sharp attack, fast pitch drop
   var kick = audioCtx.createOscillator();
@@ -175,7 +175,7 @@ function playSlam(freq, vol) {
 
 
 function playWhoosh() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Sweep tone — rising whoosh
   var sweep = audioCtx.createOscillator();
@@ -206,7 +206,7 @@ function playWhoosh() {
 }
 
 function playTextReveal() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var now = audioCtx.currentTime;
   // Soft shimmer
   var osc = audioCtx.createOscillator();
@@ -223,7 +223,7 @@ function playTextReveal() {
 }
 
 function playCardHit(idx) {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var t = idx / (CARDS.length - 1);
   var now = audioCtx.currentTime;
   // Punchy mid-bass hit
@@ -252,7 +252,7 @@ function playCardHit(idx) {
 }
 
 function playDrone() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   // Low ambient drone during sequence
   var osc = audioCtx.createOscillator();
   var gain = audioCtx.createGain();
@@ -280,7 +280,7 @@ function playDrone() {
 }
 
 function playCtaChime() {
-  if (!audioCtx || isMuted) return;
+  if (!audioCtx || isMuted || audioCtx.state !== 'running') return;
   var notes = [523, 659, 784]; // C5, E5, G5
   notes.forEach(function(freq, i) {
     var osc = audioCtx.createOscillator();
@@ -478,7 +478,38 @@ function toggleMute() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.hash === '#cta') {
+    seqEl = document.getElementById('sequence');
+    progEl = document.getElementById('progress');
+    counterEl = document.getElementById('counter');
+    ctaEl = document.getElementById('cta');
+    introEl = document.getElementById('intro');
+    replayEl = document.getElementById('replay');
+    skipEl = document.getElementById('skip');
+    var midEl = document.getElementById('mid-text');
+    introEl.style.display = 'none';
+    midEl.style.display = 'none';
+    if (skipEl) skipEl.style.display = 'none';
+    CARDS.forEach(function(c, i) {
+      var div = document.createElement('div');
+      div.className = 'seq-card';
+      div.innerHTML =
+        '<div class="photo" style="background-image:url(' + c.src + ')"></div>' +
+        '<div class="overlay">' +
+          '<span class="city-flag">' + (c.flag || '') + '</span>' +
+          '<div class="city-name">' + c.city + '</div>' +
+          '<div class="caption">' + (c.caption || '') + '</div>' +
+        '</div>';
+      seqEl.appendChild(div);
+      cardEls.push(div);
+    });
+    showCta();
+    initLang();
+    return;
+  }
+  init(); initLang();
+});
 </script>
 </body>
 </html>
