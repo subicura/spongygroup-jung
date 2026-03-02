@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>정(情) Live</title>
+<title>정 Process v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+Thai:wght@300;400;500&family=Noto+Sans+Arabic:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
@@ -97,144 +97,29 @@ body::after {
   transition: opacity 0.5s ease;
 }
 
-/* ── No data / Waiting screen ── */
+/* ── No data ── */
 .no-data {
   display: flex; align-items: center; justify-content: center;
-  min-height: 85vh; flex-direction: column; gap: 0;
-  overflow: hidden; padding: 40px 24px;
+  height: 85vh; flex-direction: column; gap: 20px;
 }
-/* Character stage */
-.nd-stage {
-  display: flex; align-items: baseline; gap: 14px;
-  margin-bottom: 44px;
+.no-data-glyph {
+  font-size: 36px;
+  opacity: 0.15;
+  animation: breathe 4s ease-in-out infinite;
 }
-.nd-hanja {
-  font-family: 'Noto Sans KR', serif;
-  font-size: clamp(80px, 20vw, 116px); font-weight: 300; line-height: 1;
-  color: rgba(216,212,206,0.42); letter-spacing: -3px;
-  animation: ndHanjaIn 1.6s cubic-bezier(0.16,1,0.3,1) 0.1s both,
-             ndHanjaBreathe 4s ease-out 2.2s infinite;
+.no-data-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
 }
-.nd-sep {
-  font-family: var(--mono); font-size: 18px;
-  color: rgba(233,69,96,0.22); line-height: 1;
-  animation: ndFadeUp 0.8s ease 0.85s both;
-  margin-bottom: 6px; flex-shrink: 0;
-}
-.nd-hangul {
-  font-family: 'Noto Sans KR', serif;
-  font-size: clamp(80px, 20vw, 116px); font-weight: 400; line-height: 1;
-  color: var(--accent); letter-spacing: -3px;
-  text-shadow: 0 0 60px rgba(233,69,96,0.4), 0 0 120px rgba(233,69,96,0.15);
-  animation: ndHangulIn 1.6s cubic-bezier(0.16,1,0.3,1) 0.35s both,
-             ndHangulBreathe 4s ease-out 2.2s infinite;
-}
-/* Tagline */
-.nd-tagline {
-  text-align: center; margin-bottom: 36px;
-}
-.nd-tagline-ko {
-  font-family: 'Noto Sans KR', serif; font-size: 13px; font-weight: 300;
-  color: rgba(255,255,255,0.88); letter-spacing: 2.5px; margin-bottom: 8px;
-  animation: ndFadeUp 1s ease 1.1s both;
-}
-.nd-tagline-en {
-  font-family: 'DM Serif Display', serif; font-size: 12px; font-style: italic;
-  color: rgba(216,212,206,0.22); letter-spacing: 0.4px;
-  animation: ndFadeUp 1s ease 1.55s both;
-}
-/* Steps */
-.nd-steps {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  margin-bottom: 40px;
-  animation: ndFadeUp 1s ease 1.95s both;
-}
-.nd-step {
-  display: flex; align-items: center; gap: 10px;
-}
-.nd-step-icon { font-size: 13px; width: 22px; text-align: center; flex-shrink: 0; }
-.nd-step-text {
-  font-family: var(--sans); font-size: 12px; font-weight: 300;
-  color: rgba(216,212,206,0.36); letter-spacing: 0.2px;
-}
-.nd-step-arrow {
-  font-family: var(--mono); font-size: 10px;
-  color: rgba(233,69,96,0.22); text-align: center;
-  animation: ndArrowPulse 1.8s ease-in-out infinite;
-}
-/* Language ticker */
-.nd-langs {
-  overflow: hidden; width: 100%; max-width: 380px;
-  margin-bottom: 40px;
-  mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
-  animation: ndFadeUp 0.8s ease 2.4s both;
-}
-.nd-langs-track {
-  display: flex; gap: 0; width: max-content;
-  animation: ndScrollLangs 32s linear 3s infinite;
-}
-.nd-lang-item {
-  font-family: var(--mono); font-size: 10px;
-  color: rgba(216,212,206,0.16); letter-spacing: 1.5px;
-  padding: 0 15px; white-space: nowrap;
-}
-.nd-lang-item strong { color: rgba(216,212,206,0.4); font-weight: 400; }
-/* Status */
-.nd-status {
-  display: flex; align-items: center; gap: 8px;
-  animation: ndFadeUp 0.8s ease 2.8s both;
-}
-.nd-status-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-  animation: ndStatusDot 2s ease-in-out infinite;
-}
-.nd-status-text {
-  font-family: var(--mono); font-size: 13px;
-  color: rgba(255,255,255,0.88); letter-spacing: 1.5px;
-  white-space: nowrap;
-}
-.nd-countdown {
-  font-family: var(--mono); font-size: 10px;
-  color: rgba(216,212,206,0.45); letter-spacing: 1px;
-  margin-top: 20px; min-height: 14px;
-}
-/* Keyframes */
-@keyframes ndHanjaIn {
-  from { opacity: 0; transform: translateX(-32px) scale(0.86); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-@keyframes ndHangulIn {
-  from { opacity: 0; transform: translateX(32px) scale(0.86); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-@keyframes ndHanjaBreathe {
-  0%   { opacity: 0.35; transform: scale(1);    color: rgba(216,212,206,0.38); }
-  10%  { opacity: 1;    transform: scale(1.04); color: rgba(255,255,255,0.88); }
-  28%  { opacity: 0.52; transform: scale(1.01); color: rgba(230,226,220,0.5); }
-  100% { opacity: 0.35; transform: scale(1);    color: rgba(216,212,206,0.38); }
-}
-@keyframes ndHangulBreathe {
-  0%   { opacity: 0.72; transform: scale(1);    color: var(--accent);           filter: drop-shadow(0 0 14px rgba(233,69,96,0.35)); }
-  10%  { opacity: 1;    transform: scale(1.04); color: rgba(255,215,215,0.98);  filter: drop-shadow(0 0 72px rgba(255,200,200,0.88)); }
-  28%  { opacity: 0.82; transform: scale(1.01); color: rgba(240,100,118,0.92);  filter: drop-shadow(0 0 32px rgba(233,69,96,0.6)); }
-  100% { opacity: 0.72; transform: scale(1);    color: var(--accent);           filter: drop-shadow(0 0 14px rgba(233,69,96,0.35)); }
-}
-@keyframes ndFadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes ndScrollLangs {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-@keyframes ndStatusDot {
-  0%,100% { opacity: 0.35; transform: scale(0.85); }
-  50%     { opacity: 1;    transform: scale(1.29); }
-}
-@keyframes ndArrowPulse {
-  0%,100% { opacity: 0.2; transform: translateY(0); }
-  50%     { opacity: 0.55; transform: translateY(2px); }
+.no-data-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
 }
 
 /* ── Mission intro ── */
@@ -274,11 +159,9 @@ body::after {
 }
 .mission-quote::before { content: '\201C'; }
 .mission-quote::after { content: '\201D'; }
-.mission-quote .mq-green { color: #5bba6f; }
-.mission-quote .mq-red   { color: #dc2626; }
-.mission-quote .mq-blue  { color: #4ea8de; }
-.mission-quote .mq-yellow{ color: #f4c430; }
-.mission-quote .mq-white { color: #f0ece6; }
+.mission-quote .mq-green {
+  color: #5bba6f;
+}
 .mission-meta {
   font-family: var(--mono);
   font-size: 10px;
@@ -800,86 +683,9 @@ body::after {
 
 <div class="chat-feed" id="feed">
   <div class="no-data" id="noData">
-
-    <!-- Characters -->
-    <div class="nd-stage">
-      <div class="nd-hanja">情</div>
-      <div class="nd-sep">·</div>
-      <div class="nd-hangul">정</div>
-    </div>
-
-    <!-- Tagline -->
-    <div class="nd-tagline">
-      <div class="nd-tagline-ko">사람 사이에 쌓이는 온기</div>
-      <div class="nd-tagline-en">The warmth that quietly grows between people</div>
-    </div>
-
-    <!-- How it works -->
-    <div class="nd-steps">
-      <div class="nd-step">
-        <div class="nd-step-icon">📸</div>
-        <div class="nd-step-text">사진 한 장을 올립니다.</div>
-      </div>
-      <div class="nd-step-arrow">↓</div>
-      <div class="nd-step">
-        <div class="nd-step-icon">🌏</div>
-        <div class="nd-step-text">다음 시간대의 누군가가 이어받습니다.</div>
-      </div>
-      <div class="nd-step-arrow">↓</div>
-      <div class="nd-step">
-        <div class="nd-step-icon">✨</div>
-        <div class="nd-step-text">24개 시간대를 돌아 정(情)앨범이 완성됩니다.</div>
-      </div>
-    </div>
-
-    <!-- Language ticker -->
-    <div class="nd-langs">
-      <div class="nd-langs-track">
-        <div class="nd-lang-item">ko&nbsp;<strong>정</strong></div>
-        <div class="nd-lang-item">ja&nbsp;<strong>情(じょう)</strong></div>
-        <div class="nd-lang-item">zh&nbsp;<strong>情分</strong></div>
-        <div class="nd-lang-item">en&nbsp;<strong>warmth</strong></div>
-        <div class="nd-lang-item">vi&nbsp;<strong>Tình cảm</strong></div>
-        <div class="nd-lang-item">th&nbsp;<strong>ความผูกพัน</strong></div>
-        <div class="nd-lang-item">ar&nbsp;<strong>أُلفة</strong></div>
-        <div class="nd-lang-item">ru&nbsp;<strong>тепло</strong></div>
-        <div class="nd-lang-item">es&nbsp;<strong>cariño</strong></div>
-        <div class="nd-lang-item">pt&nbsp;<strong>afeto</strong></div>
-        <div class="nd-lang-item">de&nbsp;<strong>Verbundenheit</strong></div>
-        <div class="nd-lang-item">fr&nbsp;<strong>affection</strong></div>
-        <div class="nd-lang-item">hi&nbsp;<strong>अपनापन</strong></div>
-        <div class="nd-lang-item">tr&nbsp;<strong>sıcaklık</strong></div>
-        <div class="nd-lang-item">uk&nbsp;<strong>теплота</strong></div>
-        <div class="nd-lang-item">id&nbsp;<strong>kehangatan</strong></div>
-        <!-- Duplicate for seamless loop -->
-        <div class="nd-lang-item">ko&nbsp;<strong>정</strong></div>
-        <div class="nd-lang-item">ja&nbsp;<strong>情(じょう)</strong></div>
-        <div class="nd-lang-item">zh&nbsp;<strong>情分</strong></div>
-        <div class="nd-lang-item">en&nbsp;<strong>warmth</strong></div>
-        <div class="nd-lang-item">vi&nbsp;<strong>Tình cảm</strong></div>
-        <div class="nd-lang-item">th&nbsp;<strong>ความผูกพัน</strong></div>
-        <div class="nd-lang-item">ar&nbsp;<strong>أُلفة</strong></div>
-        <div class="nd-lang-item">ru&nbsp;<strong>тепло</strong></div>
-        <div class="nd-lang-item">es&nbsp;<strong>cariño</strong></div>
-        <div class="nd-lang-item">pt&nbsp;<strong>afeto</strong></div>
-        <div class="nd-lang-item">de&nbsp;<strong>Verbundenheit</strong></div>
-        <div class="nd-lang-item">fr&nbsp;<strong>affection</strong></div>
-        <div class="nd-lang-item">hi&nbsp;<strong>अपनापन</strong></div>
-        <div class="nd-lang-item">tr&nbsp;<strong>sıcaklık</strong></div>
-        <div class="nd-lang-item">uk&nbsp;<strong>теплота</strong></div>
-        <div class="nd-lang-item">id&nbsp;<strong>kehangatan</strong></div>
-      </div>
-    </div>
-
-    <!-- Status -->
-    <div class="nd-status">
-      <div class="nd-status-dot"></div>
-      <span class="nd-status-text">Live View — waiting for you</span>
-    </div>
-
-    <!-- Demo countdown -->
-    <div class="nd-countdown" id="ndCountdown"></div>
-
+    <div class="no-data-glyph">정(情)</div>
+    <div class="no-data-title">Process View</div>
+    <div class="no-data-sub">waiting for relay data</div>
   </div>
 </div>
 
@@ -890,33 +696,33 @@ body::after {
      Configuration
      ══════════════════════════════════════════════ */
   var POLL = 10000;
-  // demo mode: ~40% faster, target 6-7min/chain
+  // 20% faster than default
   var T = {
-    MISSION:         4000,
-    SENDER_LABEL:    500,
-    PHOTO_SHIMMER:   1000,
-    PHOTO_DEVELOP:   1600,
-    TYPING_SHOW:     500,
-    TYPING_HOLD:     1000,
-    USER_THINK:      1200,
-    CAPTION_CHAR:    45,
-    CAPTION_MAX:     3500,
-    VALIDATE_HOLD:   2000,
-    JUNGZIGI_SHOW:   1000,
-    MISSION_SHOW:    1200,
-    MISSION_SELECT:  1000,
-    CONFIRM_SHOW:    900,
-    DEPART_SHOW:     1200,
-    HANDOFF_HOLD:    2000,
-    ARRIVAL_SHOW:    1000,
-    PREV_HOLD:       1500,
-    BUTTON_SELECT:   900,
-    RELAY_CONFIRM:   1000,
-    FORK_DIVIDER:    1000,
-    FORK_PHOTO:      1200,
-    FORK_CAPTION:    900,
-    TREE_PAUSE:      4000,
-    BETWEEN_MSG:     150
+    MISSION:         6000,
+    SENDER_LABEL:    720,
+    PHOTO_SHIMMER:   1440,
+    PHOTO_DEVELOP:   2160,
+    TYPING_SHOW:     720,
+    TYPING_HOLD:     1440,
+    USER_THINK:      1680,
+    CAPTION_CHAR:    58,
+    CAPTION_MAX:     4800,
+    VALIDATE_HOLD:   2880,
+    JUNGZIGI_SHOW:   1440,
+    MISSION_SHOW:    1680,
+    MISSION_SELECT:  1440,
+    CONFIRM_SHOW:    1200,
+    DEPART_SHOW:     1800,
+    HANDOFF_HOLD:    3360,
+    ARRIVAL_SHOW:    1440,
+    PREV_HOLD:       3360,
+    BUTTON_SELECT:   1200,
+    RELAY_CONFIRM:   1440,
+    FORK_DIVIDER:    1440,
+    FORK_PHOTO:      1800,
+    FORK_CAPTION:    1200,
+    TREE_PAUSE:      6000,
+    BETWEEN_MSG:     480
   };
   var SLOTS = 24;
 
@@ -932,15 +738,6 @@ body::after {
   var routeFlags = [];
   var currentMission = '';
   var currentMissionI18n = {};
-
-  /* Demo mode */
-  var demoMode = false;
-  var demoIndex = 0;
-  var noDataTimer = null;
-  var countdownInterval = null;
-  var DEMO_CHAINS = ['red-relay.json', 'green-relay.json', 'pet-relay.json'];
-  var DEMO_WAIT  = 30000;  // 30s 대기 후 데모 시작
-  var DEMO_NEXT  = 10000;  // 체인 완료 후 10s 뒤 다음
 
   function getMission(lang) {
     if (!currentMission) return '';
@@ -2114,8 +1911,7 @@ body::after {
 
   function formatMission(text) {
     var html = esc(text || 'Share a moment');
-    html = html.replace(/빨강/g, '<span class="mq-red">빨강</span>');
-    html = html.replace(/초록/g, '<span class="mq-green">초록</span>');
+    html = html.replace(/\b(green)\b/gi, '<span class="mq-green">$1</span>');
     return html;
   }
 
@@ -2173,10 +1969,6 @@ body::after {
     if (currentSlotIdx >= slotGroups.length) {
       showEndIndicator();
       playing = false;
-      if (demoMode) {
-        timer = setTimeout(nextDemo, DEMO_NEXT);
-        return;
-      }
       // Cycle to next tree after pause
       if (state.trees.length > 1) {
         timer = setTimeout(function() {
@@ -2230,79 +2022,13 @@ body::after {
   }
 
   /* ══════════════════════════════════════════════
-     Demo Mode
-     ══════════════════════════════════════════════ */
-  function startCountdown(seconds) {
-    stopCountdown();
-    var remaining = seconds;
-    var el = document.getElementById('ndCountdown');
-    if (el) el.textContent = 'Demo in ' + remaining + 's';
-    countdownInterval = setInterval(function() {
-      remaining--;
-      if (el) el.textContent = remaining > 0 ? 'Demo in ' + remaining + 's' : '';
-      if (remaining <= 0) stopCountdown();
-    }, 1000);
-  }
-
-  function stopCountdown() {
-    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
-    var el = document.getElementById('ndCountdown');
-    if (el) el.textContent = '';
-  }
-
-  function startDemo() {
-    if (demoMode) return;
-    stopCountdown();
-    demoMode = true;
-    demoIndex = 0;
-    loadDemoChain();
-  }
-
-  function loadDemoChain() {
-    var url = DEMO_CHAINS[demoIndex];
-    fetch(url + '?_=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(data) {
-        if (!data || !data.trees || !data.trees.length) { nextDemo(); return; }
-        state = data;
-        treeIdx = 0;
-        startTree();
-      })
-      .catch(function() { nextDemo(); });
-  }
-
-  function nextDemo() {
-    demoIndex++;
-    if (demoIndex >= DEMO_CHAINS.length) {
-      // 모든 체인 완료 → 라이브 대기로 복귀
-      demoMode = false;
-      demoIndex = 0;
-      state = null;
-      treeIdx = 0;
-      clearFeed(function() {
-        document.getElementById('noData').style.display = '';
-        noDataTimer = setTimeout(startDemo, DEMO_WAIT);
-        startCountdown(DEMO_WAIT / 1000);
-      });
-      return;
-    }
-    clearFeed(function() { loadDemoChain(); });
-  }
-
-  /* ══════════════════════════════════════════════
      Polling
      ══════════════════════════════════════════════ */
   function poll() {
-    return fetch('live-relay.json?_=' + Date.now())
+    return fetch('green-relay.json?_=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
         if (!data || data.updatedAt === lastUpdate) return;
-        // 라이브 데이터 도착 (실제 트리 있을 때만 데모 취소)
-        if (data.trees && data.trees.length) {
-          if (noDataTimer) { clearTimeout(noDataTimer); noDataTimer = null; }
-          stopCountdown();
-          if (demoMode) { demoMode = false; clearTimeout(timer); }
-        }
         lastUpdate = data.updatedAt;
         var wasEmpty = !state || !state.trees || !state.trees.length;
         state = data;
@@ -2333,8 +2059,6 @@ body::after {
   feed = document.getElementById('feed');
   poll();
   setInterval(poll, POLL);
-  noDataTimer = setTimeout(startDemo, DEMO_WAIT);
-  startCountdown(DEMO_WAIT / 1000);
 })();
 </script>
 <style>
