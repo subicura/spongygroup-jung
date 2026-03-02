@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>정(情) Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+Thai:wght@300;400;500&family=Noto+Sans+Arabic:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* Force system color emoji over Noto Sans web fonts for emoji codepoints */
+@font-face { font-family: 'Noto Sans KR'; src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'); unicode-range: U+200D, U+2600-27BF, U+2934-2935, U+2B05-2B07, U+2B1B-2B1C, U+2B50, U+2B55, U+FE0F, U+1F000-1FFFF; }
+@font-face { font-family: 'Noto Sans Thai'; src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'); unicode-range: U+200D, U+2600-27BF, U+2934-2935, U+2B05-2B07, U+2B1B-2B1C, U+2B50, U+2B55, U+FE0F, U+1F000-1FFFF; }
+@font-face { font-family: 'Noto Sans Arabic'; src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'); unicode-range: U+200D, U+2600-27BF, U+2934-2935, U+2B05-2B07, U+2B1B-2B1C, U+2B50, U+2B55, U+FE0F, U+1F000-1FFFF; }
+@font-face { font-family: 'Noto Sans JP'; src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'); unicode-range: U+200D, U+2600-27BF, U+2934-2935, U+2B05-2B07, U+2B1B-2B1C, U+2B50, U+2B55, U+FE0F, U+1F000-1FFFF; }
+@font-face { font-family: 'Noto Sans SC'; src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'); unicode-range: U+200D, U+2600-27BF, U+2934-2935, U+2B05-2B07, U+2B1B-2B1C, U+2B50, U+2B55, U+FE0F, U+1F000-1FFFF; }
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #08080a;
+  --bg-chat: #0e0e12;
+  --bubble-bot: #16161c;
+  --bubble-user: rgba(233,69,96,0.07);
+  --bubble-user-border: rgba(233,69,96,0.12);
+  --text: #d8d4ce;
+  --text-muted: rgba(216,212,206,0.42);
+  --text-dim: rgba(216,212,206,0.18);
+  --text-sys: rgba(216,212,206,0.28);
+  --accent: #e94560;
+  --accent-soft: rgba(233,69,96,0.15);
+  --accent-glow: rgba(233,69,96,0.06);
+  --green: #4ecdc4;
+  --green-dim: rgba(78,205,196,0.12);
+  --serif: 'DM Serif Display', 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', Georgia, serif;
+  --mono: 'JetBrains Mono', 'Noto Sans KR', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
+  --sans: 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Film grain ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 10000;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ── Tree tabs ── */
+.tree-tabs {
+  position: sticky; top: 0; z-index: 100;
+  display: none;
+  gap: 6px;
+  justify-content: center;
+  padding: 14px 16px 10px;
+  background: linear-gradient(var(--bg) 60%, transparent);
+}
+.tree-tabs.visible { display: flex; }
+.tree-tab {
+  padding: 4px 14px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.35s ease;
+}
+.tree-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── Chat feed ── */
+.chat-feed {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 12px 160px;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.5s ease;
+}
+
+/* ── No data / Waiting screen ── */
+.no-data {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 85vh; flex-direction: column; gap: 0;
+  overflow: hidden; padding: 40px 24px;
+}
+/* Character stage */
+.nd-stage {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 44px;
+}
+.nd-hanja {
+  font-family: 'Noto Sans KR', serif;
+  font-size: clamp(80px, 20vw, 116px); font-weight: 300; line-height: 1;
+  color: rgba(216,212,206,0.42); letter-spacing: -3px;
+  animation: ndHanjaIn 1.6s cubic-bezier(0.16,1,0.3,1) 0.1s both,
+             ndHanjaBreathe 4s ease-out 2.2s infinite;
+}
+.nd-sep {
+  font-family: var(--mono); font-size: 18px;
+  color: rgba(233,69,96,0.22); line-height: 1;
+  animation: ndFadeUp 0.8s ease 0.85s both;
+  margin-bottom: 6px; flex-shrink: 0;
+}
+.nd-hangul {
+  font-family: 'Noto Sans KR', serif;
+  font-size: clamp(80px, 20vw, 116px); font-weight: 400; line-height: 1;
+  color: var(--accent); letter-spacing: -3px;
+  text-shadow: 0 0 60px rgba(233,69,96,0.4), 0 0 120px rgba(233,69,96,0.15);
+  animation: ndHangulIn 1.6s cubic-bezier(0.16,1,0.3,1) 0.35s both,
+             ndHangulBreathe 4s ease-out 2.2s infinite;
+}
+/* Tagline */
+.nd-tagline {
+  text-align: center; margin-bottom: 36px;
+}
+.nd-tagline-ko {
+  font-family: 'Noto Sans KR', serif; font-size: 13px; font-weight: 300;
+  color: rgba(255,255,255,0.88); letter-spacing: 2.5px; margin-bottom: 8px;
+  animation: ndFadeUp 1s ease 1.1s both;
+}
+.nd-tagline-en {
+  font-family: 'DM Serif Display', serif; font-size: 12px; font-style: italic;
+  color: rgba(216,212,206,0.22); letter-spacing: 0.4px;
+  animation: ndFadeUp 1s ease 1.55s both;
+}
+/* Steps */
+.nd-steps {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin-bottom: 40px;
+  animation: ndFadeUp 1s ease 1.95s both;
+}
+.nd-step {
+  display: flex; align-items: center; gap: 10px;
+}
+.nd-step-icon { font-size: 13px; width: 22px; text-align: center; flex-shrink: 0; }
+.nd-step-text {
+  font-family: var(--sans); font-size: 12px; font-weight: 300;
+  color: rgba(216,212,206,0.36); letter-spacing: 0.2px;
+}
+.nd-step-arrow {
+  font-family: var(--mono); font-size: 10px;
+  color: rgba(233,69,96,0.22); text-align: center;
+  animation: ndArrowPulse 1.8s ease-in-out infinite;
+}
+/* Language ticker */
+.nd-langs {
+  overflow: hidden; width: 100%; max-width: 380px;
+  margin-bottom: 40px;
+  mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
+  animation: ndFadeUp 0.8s ease 2.4s both;
+}
+.nd-langs-track {
+  display: flex; gap: 0; width: max-content;
+  animation: ndScrollLangs 32s linear 3s infinite;
+}
+.nd-lang-item {
+  font-family: var(--mono); font-size: 10px;
+  color: rgba(216,212,206,0.16); letter-spacing: 1.5px;
+  padding: 0 15px; white-space: nowrap;
+}
+.nd-lang-item strong { color: rgba(216,212,206,0.4); font-weight: 400; }
+/* Status */
+.nd-status {
+  display: flex; align-items: center; gap: 8px;
+  animation: ndFadeUp 0.8s ease 2.8s both;
+}
+.nd-status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  animation: ndStatusDot 2s ease-in-out infinite;
+}
+.nd-status-text {
+  font-family: var(--mono); font-size: 13px;
+  color: rgba(255,255,255,0.88); letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+.nd-countdown {
+  font-family: var(--mono); font-size: 10px;
+  color: rgba(216,212,206,0.45); letter-spacing: 1px;
+  margin-top: 20px; min-height: 14px;
+}
+/* Keyframes */
+@keyframes ndHanjaIn {
+  from { opacity: 0; transform: translateX(-32px) scale(0.86); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes ndHangulIn {
+  from { opacity: 0; transform: translateX(32px) scale(0.86); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes ndHanjaBreathe {
+  0%   { opacity: 0.35; transform: scale(1);    color: rgba(216,212,206,0.38); }
+  10%  { opacity: 1;    transform: scale(1.04); color: rgba(255,255,255,0.88); }
+  28%  { opacity: 0.52; transform: scale(1.01); color: rgba(230,226,220,0.5); }
+  100% { opacity: 0.35; transform: scale(1);    color: rgba(216,212,206,0.38); }
+}
+@keyframes ndHangulBreathe {
+  0%   { opacity: 0.72; transform: scale(1);    color: var(--accent);           filter: drop-shadow(0 0 14px rgba(233,69,96,0.35)); }
+  10%  { opacity: 1;    transform: scale(1.04); color: rgba(255,215,215,0.98);  filter: drop-shadow(0 0 72px rgba(255,200,200,0.88)); }
+  28%  { opacity: 0.82; transform: scale(1.01); color: rgba(240,100,118,0.92);  filter: drop-shadow(0 0 32px rgba(233,69,96,0.6)); }
+  100% { opacity: 0.72; transform: scale(1);    color: var(--accent);           filter: drop-shadow(0 0 14px rgba(233,69,96,0.35)); }
+}
+@keyframes ndFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ndScrollLangs {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes ndStatusDot {
+  0%,100% { opacity: 0.35; transform: scale(0.85); }
+  50%     { opacity: 1;    transform: scale(1.29); }
+}
+@keyframes ndArrowPulse {
+  0%,100% { opacity: 0.2; transform: translateY(0); }
+  50%     { opacity: 0.55; transform: translateY(2px); }
+}
+
+/* ── Mission intro ── */
+.mission-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 40px;
+  text-align: center;
+  opacity: 0;
+}
+.mission-intro.reveal {
+  animation: missionIn 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes missionIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.mission-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.mission-quote {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 340px;
+  position: relative;
+}
+.mission-quote::before { content: '\201C'; }
+.mission-quote::after { content: '\201D'; }
+.mission-quote .mq-green { color: #5bba6f; }
+.mission-quote .mq-red   { color: #dc2626; }
+.mission-quote .mq-blue  { color: #4ea8de; }
+.mission-quote .mq-yellow{ color: #f4c430; }
+.mission-quote .mq-white { color: #f0ece6; }
+.mission-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 20px;
+  letter-spacing: 1px;
+}
+.mission-schedule {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  justify-content: center;
+  max-width: 360px;
+}
+.mission-schedule .sched-row {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── System divider ── */
+.sys-divider {
+  text-align: center;
+  padding: 28px 0 20px;
+  opacity: 0;
+  transform: translateY(8px);
+}
+.sys-divider.show { animation: msgIn 0.5s ease forwards; }
+.sys-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--text-dim), transparent);
+  margin-bottom: 12px;
+}
+.sys-divider-text {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-sys);
+}
+
+/* ── Message bubbles ── */
+.msg {
+  max-width: 82%;
+  padding: 10px 14px;
+  margin: 3px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  opacity: 0;
+  transform: translateY(10px);
+  position: relative;
+}
+.msg.show { animation: msgIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes msgIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Bot messages — left */
+.msg.bot {
+  align-self: flex-start;
+  background: var(--bubble-bot);
+  border-radius: 2px 14px 14px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+}
+.msg.bot .bot-icon {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* User messages — right */
+.msg.user {
+  align-self: flex-end;
+  background: var(--bubble-user);
+  border: 1px solid var(--bubble-user-border);
+  border-radius: 14px 2px 14px 14px;
+  color: var(--text);
+  font-family: var(--serif);
+}
+
+/* Caption message — serif italic */
+.msg.caption-msg {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(216,212,206,0.85);
+  letter-spacing: 0.3px;
+}
+.msg.caption-msg .type-cursor {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-weight: 300;
+  animation: cursorBlink 0.7s step-end infinite;
+  margin-left: 1px;
+}
+.msg.caption-msg .type-cursor.fade-out {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+@keyframes cursorBlink {
+  50% { opacity: 0; }
+}
+
+/* Photo message */
+.msg.photo-msg {
+  padding: 0;
+  overflow: hidden;
+  max-width: 72%;
+  background: transparent;
+  border: none;
+}
+.msg.photo-msg.bot { border-radius: 2px 14px 14px 14px; }
+.msg.photo-msg.user { border-radius: 14px 2px 14px 14px; }
+
+.photo-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #0c0c10;
+}
+.photo-wrap img {
+  width: 100%;
+  display: block;
+  filter: blur(20px) brightness(0.2);
+  transform: scale(1.08);
+  transition: filter 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.photo-wrap img.developed {
+  filter: blur(0) brightness(1);
+  transform: scale(1);
+}
+/* Vignette */
+.photo-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+/* Shimmer scan line */
+.photo-wrap.shimmer::before {
+  content: '';
+  position: absolute; inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+  animation: shimmerScan 1.1s linear infinite;
+}
+@keyframes shimmerScan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+/* Photo sizing — full image, no crop */
+.photo-wrap img { width: 100%; max-height: 60vh; object-fit: contain; }
+
+/* Jungzigi pass message */
+.msg.jungzigi-msg {
+  border-left: 2px solid var(--green);
+  background: var(--green-dim);
+  border-radius: 2px 14px 14px 14px;
+}
+.msg.jungzigi-msg .jz-label {
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.msg.jungzigi-msg .jz-comment {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Validation "checking" message */
+.msg.validating-msg .checking-dots {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.msg.validating-msg .checking-dots span {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  display: inline-block;
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+.msg.validating-msg .checking-dots span:nth-child(2) { animation-delay: 0.15s; }
+.msg.validating-msg .checking-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dotBounce {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Mission buttons mock */
+.mission-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+.mission-btn {
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  text-align: center;
+  transition: all 0.5s ease;
+}
+.mission-btn.selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Action buttons (Write/Skip) mock */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  text-align: center;
+  transition: all 0.5s ease;
+}
+.action-btn .btn-icon { font-size: 18px; }
+.action-btn .btn-text { font-size: 11px; }
+.action-btn.selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Typing indicator (bot thinking) */
+.msg.typing-msg {
+  padding: 12px 16px;
+}
+.typing-dots {
+  display: flex; gap: 5px;
+}
+.typing-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Handoff transition ── */
+.handoff {
+  text-align: center;
+  padding: 36px 20px 28px;
+  opacity: 0;
+  transform: scale(0.97);
+}
+.handoff.show {
+  animation: handoffIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes handoffIn {
+  to { opacity: 1; transform: scale(1); }
+}
+.handoff-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+.handoff-cities {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.4;
+}
+.handoff-arrow {
+  display: inline-block;
+  margin: 0 12px;
+  color: var(--accent);
+  font-style: normal;
+  opacity: 0;
+  animation: arrowPulse 0.6s 0.3s ease forwards;
+}
+@keyframes arrowPulse {
+  0% { opacity: 0; transform: translateX(-6px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.handoff-slot {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 10px;
+  letter-spacing: 1px;
+}
+.handoff-route {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+/* Fork divider */
+.fork-divider {
+  text-align: center;
+  padding: 20px 0 16px;
+  opacity: 0;
+}
+.fork-divider.show { animation: msgIn 0.5s ease forwards; }
+.fork-divider-text {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+.fork-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(233,69,96,0.2);
+  border-radius: 2px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: 2px;
+}
+
+/* ── Sender label (above user messages) ── */
+.sender-label {
+  align-self: flex-end;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.8px;
+  margin: 12px 0 4px;
+  opacity: 0;
+}
+.sender-label.show { animation: msgIn 0.4s ease forwards; }
+
+/* Bot label (above bot messages) */
+.bot-label {
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.8px;
+  margin: 12px 0 4px;
+  opacity: 0;
+}
+.bot-label.show { animation: msgIn 0.4s ease forwards; }
+
+/* ── End indicator ── */
+.end-indicator {
+  text-align: center;
+  padding: 48px 0 24px;
+  opacity: 0;
+  animation: fadeIn 1s 0.4s forwards;
+}
+.end-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 auto 16px;
+  animation: breathe 3.5s ease-in-out infinite;
+}
+.end-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* ── Arrival card (previous person's block, full width) ── */
+.arrival-card {
+  margin: 6px 0;
+  padding: 14px;
+  background: var(--bubble-bot);
+  border-radius: 4px 14px 14px 14px;
+  border-left: 2px solid var(--accent);
+  opacity: 0;
+  transform: translateY(10px);
+}
+.arrival-card.show { animation: msgIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.arrival-card-sender {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+.arrival-card-photo {
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.arrival-card-photo img {
+  width: 100%;
+  display: block;
+}
+.arrival-card-caption {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  color: rgba(216,212,206,0.75);
+  line-height: 1.6;
+}
+
+/* ── Keyframes ── */
+@keyframes breathe {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* ── Scroll button ── */
+.scroll-btn {
+  position: fixed; bottom: 28px; right: 20px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(233,69,96,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(233,69,96,0.3);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  display: none;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  z-index: 90;
+  transition: all 0.3s ease;
+}
+.scroll-btn.visible { display: flex; }
+.scroll-btn:active { transform: scale(0.9); }
+
+/* ── User typing indicator ── */
+.msg.user-typing-msg {
+  padding: 12px 16px;
+  background: var(--bubble-user);
+  border: 1px solid var(--bubble-user-border);
+}
+.user-typing-dots {
+  display: flex; gap: 4px;
+}
+.user-typing-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.5;
+  animation: userTypePulse 1.4s ease-in-out infinite;
+}
+.user-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.user-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes userTypePulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40% { opacity: 0.7; transform: scale(1.15); }
+}
+
+/* ── User action tap (inline keyboard button) ── */
+.msg.user-tap {
+  background: rgba(233,69,96,0.12);
+  border: 1px solid rgba(233,69,96,0.25);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  padding: 10px 18px;
+  text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 440px) {
+  .chat-feed { padding: 0 8px 140px; }
+  .msg { font-size: 12px; max-width: 86%; }
+  .msg.caption-msg { font-size: 15px; }
+  .msg.photo-msg { max-width: 78%; }
+  .mission-quote { font-size: 19px; }
+  .handoff-cities { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="tree-tabs" id="treeTabs"></div>
+
+<div class="chat-feed" id="feed">
+  <div class="no-data" id="noData">
+
+    <!-- Characters -->
+    <div class="nd-stage">
+      <div class="nd-hanja">情</div>
+      <div class="nd-sep">·</div>
+      <div class="nd-hangul">정</div>
+    </div>
+
+    <!-- Tagline -->
+    <div class="nd-tagline">
+      <div class="nd-tagline-ko">사람 사이에 쌓이는 온기</div>
+      <div class="nd-tagline-en">The warmth that quietly grows between people</div>
+    </div>
+
+    <!-- How it works -->
+    <div class="nd-steps">
+      <div class="nd-step">
+        <div class="nd-step-icon">📸</div>
+        <div class="nd-step-text">사진 한 장을 올립니다.</div>
+      </div>
+      <div class="nd-step-arrow">↓</div>
+      <div class="nd-step">
+        <div class="nd-step-icon">🌏</div>
+        <div class="nd-step-text">다음 시간대의 누군가가 이어받습니다.</div>
+      </div>
+      <div class="nd-step-arrow">↓</div>
+      <div class="nd-step">
+        <div class="nd-step-icon">✨</div>
+        <div class="nd-step-text">24개 시간대를 돌아 정(情)앨범이 완성됩니다.</div>
+      </div>
+    </div>
+
+    <!-- Language ticker -->
+    <div class="nd-langs">
+      <div class="nd-langs-track">
+        <div class="nd-lang-item">ko&nbsp;<strong>정</strong></div>
+        <div class="nd-lang-item">ja&nbsp;<strong>情(じょう)</strong></div>
+        <div class="nd-lang-item">zh&nbsp;<strong>情分</strong></div>
+        <div class="nd-lang-item">en&nbsp;<strong>warmth</strong></div>
+        <div class="nd-lang-item">vi&nbsp;<strong>Tình cảm</strong></div>
+        <div class="nd-lang-item">th&nbsp;<strong>ความผูกพัน</strong></div>
+        <div class="nd-lang-item">ar&nbsp;<strong>أُلفة</strong></div>
+        <div class="nd-lang-item">ru&nbsp;<strong>тепло</strong></div>
+        <div class="nd-lang-item">es&nbsp;<strong>cariño</strong></div>
+        <div class="nd-lang-item">pt&nbsp;<strong>afeto</strong></div>
+        <div class="nd-lang-item">de&nbsp;<strong>Verbundenheit</strong></div>
+        <div class="nd-lang-item">fr&nbsp;<strong>affection</strong></div>
+        <div class="nd-lang-item">hi&nbsp;<strong>अपनापन</strong></div>
+        <div class="nd-lang-item">tr&nbsp;<strong>sıcaklık</strong></div>
+        <div class="nd-lang-item">uk&nbsp;<strong>теплота</strong></div>
+        <div class="nd-lang-item">id&nbsp;<strong>kehangatan</strong></div>
+        <!-- Duplicate for seamless loop -->
+        <div class="nd-lang-item">ko&nbsp;<strong>정</strong></div>
+        <div class="nd-lang-item">ja&nbsp;<strong>情(じょう)</strong></div>
+        <div class="nd-lang-item">zh&nbsp;<strong>情分</strong></div>
+        <div class="nd-lang-item">en&nbsp;<strong>warmth</strong></div>
+        <div class="nd-lang-item">vi&nbsp;<strong>Tình cảm</strong></div>
+        <div class="nd-lang-item">th&nbsp;<strong>ความผูกพัน</strong></div>
+        <div class="nd-lang-item">ar&nbsp;<strong>أُلفة</strong></div>
+        <div class="nd-lang-item">ru&nbsp;<strong>тепло</strong></div>
+        <div class="nd-lang-item">es&nbsp;<strong>cariño</strong></div>
+        <div class="nd-lang-item">pt&nbsp;<strong>afeto</strong></div>
+        <div class="nd-lang-item">de&nbsp;<strong>Verbundenheit</strong></div>
+        <div class="nd-lang-item">fr&nbsp;<strong>affection</strong></div>
+        <div class="nd-lang-item">hi&nbsp;<strong>अपनापन</strong></div>
+        <div class="nd-lang-item">tr&nbsp;<strong>sıcaklık</strong></div>
+        <div class="nd-lang-item">uk&nbsp;<strong>теплота</strong></div>
+        <div class="nd-lang-item">id&nbsp;<strong>kehangatan</strong></div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="nd-status">
+      <div class="nd-status-dot"></div>
+      <span class="nd-status-text">Live View — waiting for you</span>
+    </div>
+
+    <!-- Demo countdown -->
+    <div class="nd-countdown" id="ndCountdown"></div>
+
+  </div>
+</div>
+
+
+<script>
+(function() {
+  /* ══════════════════════════════════════════════
+     Configuration
+     ══════════════════════════════════════════════ */
+  var POLL = 10000;
+  // demo mode: ~40% faster, target 6-7min/chain
+  var T = {
+    MISSION:         4000,
+    SENDER_LABEL:    500,
+    PHOTO_SHIMMER:   1000,
+    PHOTO_DEVELOP:   1600,
+    TYPING_SHOW:     500,
+    TYPING_HOLD:     1000,
+    USER_THINK:      1200,
+    CAPTION_CHAR:    45,
+    CAPTION_MAX:     3500,
+    VALIDATE_HOLD:   2000,
+    JUNGZIGI_SHOW:   1000,
+    MISSION_SHOW:    1200,
+    MISSION_SELECT:  1000,
+    CONFIRM_SHOW:    900,
+    DEPART_SHOW:     1200,
+    HANDOFF_HOLD:    2000,
+    ARRIVAL_SHOW:    1000,
+    PREV_HOLD:       1500,
+    BUTTON_SELECT:   900,
+    RELAY_CONFIRM:   1000,
+    FORK_DIVIDER:    1000,
+    FORK_PHOTO:      1200,
+    FORK_CAPTION:    900,
+    TREE_PAUSE:      4000,
+    BETWEEN_MSG:     150
+  };
+  var SLOTS = 24;
+
+  /* ══════════════════════════════════════════════
+     State
+     ══════════════════════════════════════════════ */
+  var state = null;
+  var treeIdx = 0;
+  var slotGroups = [];
+  var currentSlotIdx = 0;
+  var timer = null;
+  var lastUpdate = '';
+  var routeFlags = [];
+  var currentMission = '';
+  var currentMissionI18n = {};
+
+  /* Demo mode */
+  var demoMode = false;
+  var demoIndex = 0;
+  var noDataTimer = null;
+  var countdownInterval = null;
+  var DEMO_CHAINS = ['red-relay.json', 'green-relay.json', 'pet-relay.json'];
+  var DEMO_WAIT  = 30000;  // 30s 대기 후 데모 시작
+  var DEMO_NEXT  = 10000;  // 체인 완료 후 10s 뒤 다음
+
+  function getMission(lang) {
+    if (!currentMission) return '';
+    return currentMissionI18n[lang] || currentMission;
+  }
+  var playing = false;
+
+  /* ══════════════════════════════════════════════
+     Jungzigi Comment Generator
+     ══════════════════════════════════════════════ */
+  /* ── Multilingual jungzigi comments ── */
+  var JZ_I18N = {
+    en: {
+      food: ['That looks amazing! The textures are beautiful.','Now I\u2019m hungry. Perfect capture.','There\u2019s a whole story in this meal.','Love the colors on that plate.'],
+      nature: ['So alive. You can almost feel it breathing.','Beautiful green. Nature always finds a way.','This kind of quiet is everything.','Perfect moment captured.'],
+      city: ['I love how cities tell stories in the details.','The urban jungle has its own kind of green.','Great eye for street details.','This says so much about the place.'],
+      object: ['The wear tells the whole story.','Objects carry so much history.','Love the character in this.','There\u2019s something beautiful about things that last.'],
+      fallback: ['Beautiful. This is what \uC815(\u60C5) is about.','Love this perspective.','There\u2019s real warmth in this.','Perfect addition to the chain.']
+    },
+    ko: {
+      food: ['\uB9DB\uC788\uACA0\uB2E4! \uC9C8\uAC10\uC774 \uC608\uC220\uC774\uB124\uC694.','\uBC30\uACE0\uD504\uB2E4\u2026 \uC644\uBCBD\uD55C \uD55C \uCEF7.','\uC774 \uD55C \uB07C\uC5D0 \uC774\uC57C\uAE30\uAC00 \uB2F4\uACA8 \uC788\uB124\uC694.','\uC811\uC2DC \uC704\uC758 \uC0C9\uAC10\uC774 \uC88B\uC544\uC694.'],
+      nature: ['\uC0B4\uC544 \uC228 \uC26C\uB294 \uB290\uB08C\uC774\uC5D0\uC694.','\uC544\uB984\uB2E4\uC6B4 \uCD08\uB85D. \uC790\uC5F0\uC740 \uB298 \uAE38\uC744 \uCC3E\uC8E0.','\uC774\uB7F0 \uACE0\uC694\uD568\uC774 \uC804\uBD80\uC608\uC694.','\uC644\uBCBD\uD55C \uC21C\uAC04\uC744 \uD3EC\uCC29\uD588\uB124\uC694.'],
+      city: ['\uB3C4\uC2DC\uB294 \uB514\uD14C\uC77C\uC5D0 \uC774\uC57C\uAE30\uB97C \uC228\uACA8\uB450\uC8E0.','\uB3C4\uC2DC\uC758 \uC815\uAE00\uC5D0\uB3C4 \uCD08\uB85D\uC774 \uC788\uC8E0.','\uAC70\uB9AC\uC758 \uB514\uD14C\uC77C\uC744 \uC798 \uD3EC\uCC29\uD588\uC5B4\uC694.','\uC774 \uC7A5\uC18C\uC5D0 \uB300\uD574 \uB9CE\uC740 \uAC78 \uB9D0\uD574\uC8FC\uB124\uC694.'],
+      object: ['\uC0AC\uC6A9\uD754\uC774 \uBAA8\uB4E0 \uAC78 \uB9D0\uD574\uC8FC\uB124\uC694.','\uBB3C\uAC74\uC5D0\uB294 \uAE34 \uC5ED\uC0AC\uAC00 \uB2F4\uACA8 \uC788\uC8E0.','\uC774 \uBB3C\uAC74\uC758 \uAE30\uD488\uC774 \uB290\uAEF4\uC838\uC694.','\uC624\uB798\uB41C \uAC83\uB4E4\uC774 \uAC00\uC9C4 \uC544\uB984\uB2E4\uC6C0\uC774 \uC788\uC8E0.'],
+      fallback: ['\uC544\uB984\uB2F5\uB2E4. \uC774\uAC8C \uC815(\u60C5)\uC774\uC8E0.','\uC774 \uC2DC\uC120\uC774 \uC88B\uC544\uC694.','\uB530\uB73B\uD568\uC774 \uB290\uAEF4\uC838\uC694.','\uCCB4\uC778\uC5D0 \uC644\uBCBD\uD55C \uCD94\uAC00\uB124\uC694.']
+    },
+    ja: {
+      food: ['\u304A\u3044\u3057\u305D\u3046\uFF01\u8CEA\u611F\u304C\u7D20\u6674\u3089\u3057\u3044\u3002','\u304A\u8179\u304C\u7A7A\u3044\u3066\u304D\u305F\u2026\u5B8C\u74A7\u306A\u4E00\u679A\u3002','\u3053\u306E\u4E00\u98DF\u306B\u7269\u8A9E\u304C\u3042\u308A\u307E\u3059\u306D\u3002','\u304A\u76BF\u306E\u8272\u5F69\u304C\u7D20\u6575\u3002'],
+      nature: ['\u751F\u304D\u751F\u304D\u3068\u3057\u3066\u3044\u308B\u3002\u606F\u9063\u3044\u304C\u611F\u3058\u3089\u308C\u307E\u3059\u3002','\u7F8E\u3057\u3044\u7DD1\u3002\u81EA\u7136\u306F\u5FC5\u305A\u9053\u3092\u898B\u3064\u3051\u308B\u3002','\u3053\u306E\u9759\u3051\u3055\u304C\u5168\u3066\u3002','\u5B8C\u74A7\u306A\u77AC\u9593\u3002'],
+      city: ['\u90FD\u5E02\u306F\u30C7\u30A3\u30C6\u30FC\u30EB\u306B\u7269\u8A9E\u3092\u96A0\u3059\u3002','\u90FD\u4F1A\u306E\u30B8\u30E3\u30F3\u30B0\u30EB\u306B\u3082\u7DD1\u304C\u3042\u308B\u3002','\u8857\u306E\u30C7\u30A3\u30C6\u30FC\u30EB\u3092\u898B\u4E8B\u306B\u6355\u3089\u3048\u305F\u3002','\u3053\u306E\u5834\u6240\u306B\u3064\u3044\u3066\u591A\u304F\u3092\u8A9E\u3063\u3066\u3044\u307E\u3059\u3002'],
+      object: ['\u4F7F\u3044\u8FBC\u307E\u308C\u305F\u8DE1\u304C\u5168\u3066\u3092\u7269\u8A9E\u308B\u3002','\u7269\u306B\u306F\u6B74\u53F2\u304C\u5BBF\u308B\u3002','\u3053\u306E\u5473\u308F\u3044\u304C\u597D\u304D\u3002','\u9577\u304F\u4F7F\u308F\u308C\u305F\u3082\u306E\u306B\u306F\u7F8E\u3057\u3055\u304C\u3042\u308B\u3002'],
+      fallback: ['\u7F8E\u3057\u3044\u3002\u3053\u308C\u304C\uC815(\u60C5)\u3067\u3059\u3002','\u3053\u306E\u8996\u70B9\u304C\u597D\u304D\u3002','\u6E29\u304B\u307F\u3092\u611F\u3058\u307E\u3059\u3002','\u30C1\u30A7\u30FC\u30F3\u306B\u3074\u3063\u305F\u308A\u3002']
+    },
+    zh: {
+      food: ['\u770B\u8D77\u6765\u592A\u68D2\u4E86\uFF01\u8D28\u611F\u771F\u7F8E\u3002','\u997F\u4E86\u2026\u5B8C\u7F8E\u6355\u6349\u3002','\u8FD9\u987F\u996D\u91CC\u85CF\u7740\u4E00\u4E2A\u6545\u4E8B\u3002','\u76D8\u5B50\u91CC\u7684\u8272\u5F69\u771F\u597D\u770B\u3002'],
+      nature: ['\u5145\u6EE1\u751F\u547D\u529B\u3002\u51E0\u4E4E\u80FD\u611F\u53D7\u5230\u5B83\u7684\u547C\u5438\u3002','\u7F8E\u4E3D\u7684\u7EFF\u3002\u5927\u81EA\u7136\u603B\u80FD\u627E\u5230\u51FA\u8DEF\u3002','\u8FD9\u79CD\u5B89\u9759\u5C31\u662F\u4E00\u5207\u3002','\u5B8C\u7F8E\u7684\u77AC\u95F4\u3002'],
+      city: ['\u57CE\u5E02\u5728\u7EC6\u8282\u91CC\u8BB2\u8FF0\u6545\u4E8B\u3002','\u90FD\u5E02\u4E1B\u6797\u4E5F\u6709\u5B83\u7684\u7EFF\u3002','\u8857\u5934\u7EC6\u8282\u6355\u6349\u5F97\u771F\u597D\u3002','\u8FD9\u8BF4\u660E\u4E86\u5F88\u591A\u5173\u4E8E\u8FD9\u4E2A\u5730\u65B9\u7684\u4E8B\u3002'],
+      object: ['\u78E8\u635F\u8BF4\u660E\u4E86\u4E00\u5207\u3002','\u7269\u4EF6\u627F\u8F7D\u7740\u5386\u53F2\u3002','\u559C\u6B22\u8FD9\u4EFD\u8D28\u611F\u3002','\u7ECF\u4E45\u7684\u4E1C\u897F\u6709\u4E00\u79CD\u7F8E\u3002'],
+      fallback: ['\u771F\u7F8E\u3002\u8FD9\u5C31\u662F\uC815(\u60C5)\u3002','\u559C\u6B22\u8FD9\u4E2A\u89C6\u89D2\u3002','\u80FD\u611F\u53D7\u5230\u6E29\u6696\u3002','\u5B8C\u7F8E\u52A0\u5165\u3002']
+    },
+    th: {
+      food: ['\u0E14\u0E39\u0E2D\u0E23\u0E48\u0E2D\u0E22\u0E21\u0E32\u0E01! \u0E40\u0E19\u0E37\u0E49\u0E2D\u0E2A\u0E31\u0E21\u0E1C\u0E31\u0E2A\u0E2A\u0E27\u0E22\u0E07\u0E32\u0E21\u0E40\u0E25\u0E22','\u0E2B\u0E34\u0E27\u0E41\u0E25\u0E49\u0E27\u2026 \u0E16\u0E48\u0E32\u0E22\u0E44\u0E14\u0E49\u0E2A\u0E21\u0E1A\u0E39\u0E23\u0E13\u0E4C\u0E41\u0E1A\u0E1A\u0E21\u0E32\u0E01','\u0E21\u0E37\u0E49\u0E2D\u0E19\u0E35\u0E49\u0E21\u0E35\u0E40\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E40\u0E25\u0E48\u0E32\u0E17\u0E31\u0E49\u0E07\u0E21\u0E37\u0E49\u0E2D','\u0E2A\u0E35\u0E2A\u0E31\u0E19\u0E1A\u0E19\u0E08\u0E32\u0E19\u0E2A\u0E27\u0E22\u0E21\u0E32\u0E01'],
+      nature: ['\u0E21\u0E35\u0E0A\u0E35\u0E27\u0E34\u0E15\u0E0A\u0E35\u0E27\u0E32 \u0E23\u0E39\u0E49\u0E2A\u0E36\u0E01\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22\u0E27\u0E48\u0E32\u0E01\u0E33\u0E25\u0E31\u0E07\u0E2B\u0E32\u0E22\u0E43\u0E08','\u0E2A\u0E35\u0E40\u0E02\u0E35\u0E22\u0E27\u0E2A\u0E27\u0E22\u0E07\u0E32\u0E21 \u0E18\u0E23\u0E23\u0E21\u0E0A\u0E32\u0E15\u0E34\u0E2B\u0E32\u0E17\u0E32\u0E07\u0E44\u0E14\u0E49\u0E40\u0E2A\u0E21\u0E2D','\u0E04\u0E27\u0E32\u0E21\u0E40\u0E07\u0E35\u0E22\u0E1A\u0E41\u0E1A\u0E1A\u0E19\u0E35\u0E49\u0E04\u0E37\u0E2D\u0E17\u0E38\u0E01\u0E2D\u0E22\u0E48\u0E32\u0E07','\u0E0A\u0E48\u0E27\u0E07\u0E40\u0E27\u0E25\u0E32\u0E17\u0E35\u0E48\u0E2A\u0E21\u0E1A\u0E39\u0E23\u0E13\u0E4C\u0E41\u0E1A\u0E1A'],
+      city: ['\u0E40\u0E21\u0E37\u0E2D\u0E07\u0E40\u0E25\u0E48\u0E32\u0E40\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E43\u0E19\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14','\u0E1B\u0E48\u0E32\u0E04\u0E2D\u0E19\u0E01\u0E23\u0E35\u0E15\u0E01\u0E47\u0E21\u0E35\u0E2A\u0E35\u0E40\u0E02\u0E35\u0E22\u0E27\u0E02\u0E2D\u0E07\u0E21\u0E31\u0E19','\u0E08\u0E31\u0E1A\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\u0E02\u0E2D\u0E07\u0E16\u0E19\u0E19\u0E44\u0E14\u0E49\u0E14\u0E35','\u0E1A\u0E2D\u0E01\u0E40\u0E25\u0E48\u0E32\u0E44\u0E14\u0E49\u0E40\u0E22\u0E2D\u0E30\u0E40\u0E01\u0E35\u0E48\u0E22\u0E27\u0E01\u0E31\u0E1A\u0E17\u0E35\u0E48\u0E19\u0E35\u0E48'],
+      object: ['\u0E23\u0E2D\u0E22\u0E2A\u0E36\u0E01\u0E2B\u0E23\u0E2D\u0E40\u0E25\u0E48\u0E32\u0E17\u0E38\u0E01\u0E2D\u0E22\u0E48\u0E32\u0E07','\u0E02\u0E2D\u0E07\u0E43\u0E0A\u0E49\u0E40\u0E01\u0E47\u0E1A\u0E1B\u0E23\u0E30\u0E27\u0E31\u0E15\u0E34\u0E28\u0E32\u0E2A\u0E15\u0E23\u0E4C\u0E44\u0E27\u0E49\u0E40\u0E22\u0E2D\u0E30','\u0E0A\u0E2D\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E21\u0E35\u0E40\u0E2D\u0E01\u0E25\u0E31\u0E01\u0E29\u0E13\u0E4C\u0E02\u0E2D\u0E07\u0E21\u0E31\u0E19','\u0E02\u0E2D\u0E07\u0E17\u0E35\u0E48\u0E43\u0E0A\u0E49\u0E17\u0E19\u0E19\u0E32\u0E19\u0E21\u0E35\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E27\u0E22\u0E07\u0E32\u0E21'],
+      fallback: ['\u0E2A\u0E27\u0E22\u0E07\u0E32\u0E21 \u0E19\u0E35\u0E48\u0E41\u0E2B\u0E25\u0E30\u0E04\u0E37\u0E2D\u0E2A\u0E34\u0E48\u0E07\u0E17\u0E35\u0E48\u0E40\u0E23\u0E35\u0E22\u0E01\u0E27\u0E48\u0E32\uC815(\u60C5)','\u0E0A\u0E2D\u0E1A\u0E21\u0E38\u0E21\u0E21\u0E2D\u0E07\u0E19\u0E35\u0E49','\u0E23\u0E39\u0E49\u0E2A\u0E36\u0E01\u0E16\u0E36\u0E07\u0E04\u0E27\u0E32\u0E21\u0E2D\u0E1A\u0E2D\u0E38\u0E48\u0E19','\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E02\u0E49\u0E32\u0E21\u0E32\u0E44\u0E14\u0E49\u0E25\u0E07\u0E15\u0E31\u0E27']
+    },
+    fr: {
+      food: ['\u00C7a a l\u2019air d\u00E9licieux ! Les textures sont magnifiques.','J\u2019ai faim maintenant\u2026 Prise parfaite.','Tout un r\u00E9cit dans ce repas.','J\u2019adore les couleurs dans cette assiette.'],
+      nature: ['Tellement vivant. On sent presque sa respiration.','Beau vert. La nature trouve toujours un chemin.','Ce genre de calme, c\u2019est tout.','Instant parfait captur\u00E9.'],
+      city: ['J\u2019adore comment les villes racontent dans les d\u00E9tails.','La jungle urbaine a aussi son vert.','Bel \u0153il pour les d\u00E9tails de rue.','Cela en dit long sur cet endroit.'],
+      object: ['L\u2019usure raconte toute l\u2019histoire.','Les objets portent tant d\u2019histoire.','J\u2019aime le caract\u00E8re de ceci.','Il y a quelque chose de beau dans ce qui dure.'],
+      fallback: ['Magnifique. C\u2019est \u00E7a, la \uC815(\u60C5).','J\u2019aime cette perspective.','Il y a une vraie chaleur ici.','Parfait ajout \u00E0 la cha\u00EEne.']
+    },
+    ar: {
+      food: ['\u064A\u0628\u062F\u0648 \u0631\u0627\u0626\u0639\u0627\u064B! \u0627\u0644\u0642\u0648\u0627\u0645 \u062C\u0645\u064A\u0644.','\u062C\u0639\u062A\u0646\u064A \u0623\u062C\u0648\u0639\u2026 \u0644\u0642\u0637\u0629 \u0645\u062B\u0627\u0644\u064A\u0629.','\u0642\u0635\u0629 \u0643\u0627\u0645\u0644\u0629 \u0641\u064A \u0647\u0630\u0647 \u0627\u0644\u0648\u062C\u0628\u0629.','\u0623\u062D\u0628 \u0627\u0644\u0623\u0644\u0648\u0627\u0646 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0637\u0628\u0642.'],
+      nature: ['\u0645\u0644\u064A\u0621 \u0628\u0627\u0644\u062D\u064A\u0627\u0629. \u062A\u0643\u0627\u062F \u062A\u0634\u0639\u0631 \u0628\u062A\u0646\u0641\u0633\u0647.','\u0623\u062E\u0636\u0631 \u062C\u0645\u064A\u0644. \u0627\u0644\u0637\u0628\u064A\u0639\u0629 \u062A\u062C\u062F \u0637\u0631\u064A\u0642\u0647\u0627 \u062F\u0627\u0626\u0645\u0627\u064B.','\u0647\u0630\u0627 \u0627\u0644\u0647\u062F\u0648\u0621 \u0647\u0648 \u0643\u0644 \u0634\u064A\u0621.','\u0644\u062D\u0638\u0629 \u0645\u062B\u0627\u0644\u064A\u0629.'],
+      city: ['\u0623\u062D\u0628 \u0643\u064A\u0641 \u062A\u0631\u0648\u064A \u0627\u0644\u0645\u062F\u0646 \u0642\u0635\u0635\u0647\u0627 \u0641\u064A \u0627\u0644\u062A\u0641\u0627\u0635\u064A\u0644.','\u063A\u0627\u0628\u0629 \u0627\u0644\u0645\u062F\u064A\u0646\u0629 \u0644\u0647\u0627 \u0623\u062E\u0636\u0631\u0647\u0627 \u0623\u064A\u0636\u0627\u064B.','\u0639\u064A\u0646 \u062C\u064A\u062F\u0629 \u0644\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0634\u0627\u0631\u0639.','\u0647\u0630\u0627 \u064A\u0642\u0648\u0644 \u0627\u0644\u0643\u062B\u064A\u0631 \u0639\u0646 \u0647\u0630\u0627 \u0627\u0644\u0645\u0643\u0627\u0646.'],
+      object: ['\u0627\u0644\u0628\u0644\u0649 \u064A\u0631\u0648\u064A \u0627\u0644\u0642\u0635\u0629 \u0643\u0644\u0647\u0627.','\u0627\u0644\u0623\u0634\u064A\u0627\u0621 \u062A\u062D\u0645\u0644 \u062A\u0627\u0631\u064A\u062E\u0627\u064B \u0637\u0648\u064A\u0644\u0627\u064B.','\u0623\u062D\u0628 \u0627\u0644\u0637\u0627\u0628\u0639 \u0641\u064A \u0647\u0630\u0627.','\u0647\u0646\u0627\u0643 \u062C\u0645\u0627\u0644 \u0641\u064A \u0627\u0644\u0623\u0634\u064A\u0627\u0621 \u0627\u0644\u062A\u064A \u062A\u062F\u0648\u0645.'],
+      fallback: ['\u062C\u0645\u064A\u0644. \u0647\u0630\u0627 \u0647\u0648 \u0645\u0639\u0646\u0649 \uC815(\u60C5).','\u0623\u062D\u0628 \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u0638\u0648\u0631.','\u0647\u0646\u0627\u0643 \u062F\u0641\u0621 \u062D\u0642\u064A\u0642\u064A \u0647\u0646\u0627.','\u0625\u0636\u0627\u0641\u0629 \u0645\u062B\u0627\u0644\u064A\u0629 \u0644\u0644\u0633\u0644\u0633\u0644\u0629.']
+    },
+    ru: {
+      food: ['\u0412\u044B\u0433\u043B\u044F\u0434\u0438\u0442 \u0432\u043A\u0443\u0441\u043D\u043E! \u041E\u0442\u043B\u0438\u0447\u043D\u0430\u044F \u0442\u0435\u043A\u0441\u0442\u0443\u0440\u0430.','\u0410\u043F\u043F\u0435\u0442\u0438\u0442\u043D\u043E\u2026 \u0418\u0434\u0435\u0430\u043B\u044C\u043D\u044B\u0439 \u043A\u0430\u0434\u0440.','\u0426\u0435\u043B\u0430\u044F \u0438\u0441\u0442\u043E\u0440\u0438\u044F \u0432 \u044D\u0442\u043E\u043C \u0431\u043B\u044E\u0434\u0435.','\u041B\u044E\u0431\u043B\u044E \u044D\u0442\u0438 \u0446\u0432\u0435\u0442\u0430 \u0432 \u0435\u0434\u0435.'],
+      nature: ['\u041F\u043E\u043B\u043D\u043E \u0436\u0438\u0437\u043D\u0438. \u041F\u043E\u0447\u0442\u0438 \u0447\u0443\u0432\u0441\u0442\u0432\u0443\u0435\u0448\u044C \u0434\u044B\u0445\u0430\u043D\u0438\u0435.','\u041A\u0440\u0430\u0441\u0438\u0432\u0430\u044F \u0437\u0435\u043B\u0435\u043D\u044C. \u041F\u0440\u0438\u0440\u043E\u0434\u0430 \u0432\u0441\u0435\u0433\u0434\u0430 \u043D\u0430\u0439\u0434\u0451\u0442 \u043F\u0443\u0442\u044C.','\u042D\u0442\u043E\u0442 \u043F\u043E\u043A\u043E\u0439 \u2014 \u0432\u0441\u0451.','\u0418\u0434\u0435\u0430\u043B\u044C\u043D\u044B\u0439 \u043C\u043E\u043C\u0435\u043D\u0442.'],
+      city: ['\u041B\u044E\u0431\u043B\u044E, \u043A\u0430\u043A \u0433\u043E\u0440\u043E\u0434\u0430 \u0440\u0430\u0441\u0441\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u0438\u0441\u0442\u043E\u0440\u0438\u0438 \u0432 \u0434\u0435\u0442\u0430\u043B\u044F\u0445.','\u0413\u043E\u0440\u043E\u0434\u0441\u043A\u0438\u0435 \u0434\u0436\u0443\u043D\u0433\u043B\u0438 \u0442\u043E\u0436\u0435 \u0437\u0435\u043B\u0435\u043D\u044B\u0435.','\u041E\u0442\u043B\u0438\u0447\u043D\u044B\u0439 \u0433\u043B\u0430\u0437 \u043D\u0430 \u0434\u0435\u0442\u0430\u043B\u0438.','\u042D\u0442\u043E \u043C\u043D\u043E\u0433\u043E\u0435 \u0433\u043E\u0432\u043E\u0440\u0438\u0442 \u043E\u043C\u0435\u0441\u0442\u0435.'],
+      object: ['\u0418\u0437\u043D\u043E\u0441 \u0440\u0430\u0441\u0441\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u0432\u0441\u044E \u0438\u0441\u0442\u043E\u0440\u0438\u044E.','\u0412\u0435\u0449\u0438 \u043D\u0435\u0441\u0443\u0442 \u0434\u043E\u043B\u0433\u0443\u044E \u043F\u0430\u043C\u044F\u0442\u044C.','\u041B\u044E\u0431\u043B\u044E \u0445\u0430\u0440\u0430\u043A\u0442\u0435\u0440 \u0432 \u044D\u0442\u043E\u043C.','\u0415\u0441\u0442\u044C \u043A\u0440\u0430\u0441\u043E\u0442\u0430 \u0432 \u0432\u0435\u0449\u0430\u0445, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0441\u043B\u0443\u0436\u0430\u0442 \u0434\u043E\u043B\u0433\u043E.'],
+      fallback: ['\u041F\u0440\u0435\u043A\u0440\u0430\u0441\u043D\u043E. \u042D\u0442\u043E \u0438 \u0435\u0441\u0442\u044C \uC815(\u60C5).','\u041D\u0440\u0430\u0432\u0438\u0442\u0441\u044F \u044D\u0442\u043E\u0442 \u0432\u0437\u0433\u043B\u044F\u0434.','\u0427\u0443\u0432\u0441\u0442\u0432\u0443\u0435\u0442\u0441\u044F \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0435 \u0442\u0435\u043F\u043B\u043E.','\u0418\u0434\u0435\u0430\u043B\u044C\u043D\u043E\u0435 \u0434\u043E\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u043A \u0446\u0435\u043F\u043E\u0447\u043A\u0435.']
+    },
+    pt: {
+      food: ['Parece delicioso! Textura incr\u00EDvel.','Fiquei com fome\u2026 Foto perfeita.','Uma hist\u00F3ria inteira nesse prato.','Adoro as cores dessa comida.'],
+      nature: ['Cheio de vida. D\u00E1 pra sentir a respira\u00E7\u00E3o.','Verde lindo. A natureza sempre encontra um caminho.','Essa paz \u00E9 tudo.','Momento perfeito.'],
+      city: ['Adoro como as cidades contam hist\u00F3rias nos detalhes.','A selva urbana tamb\u00E9m tem seu verde.','Bom olho pra detalhes de rua.','Isso diz muito sobre esse lugar.'],
+      object: ['O desgaste conta toda a hist\u00F3ria.','As coisas carregam uma longa mem\u00F3ria.','Adoro o car\u00E1ter nisso.','H\u00E1 beleza nas coisas que duram.'],
+      fallback: ['Lindo. Isso \u00E9 \uC815(\u60C5).','Gostei dessa perspectiva.','Tem um calor real aqui.','Adi\u00E7\u00E3o perfeita \u00E0 corrente.']
+    },
+    es: {
+      food: ['\u00A1Se ve delicioso! Textura incre\u00EDble.','Me dio hambre\u2026 Foto perfecta.','Toda una historia en ese plato.','Me encantan los colores de esa comida.'],
+      nature: ['Lleno de vida. Casi se siente la respiraci\u00F3n.','Verde hermoso. La naturaleza siempre encuentra su camino.','Esta paz lo es todo.','Momento perfecto.'],
+      city: ['Me encanta c\u00F3mo las ciudades cuentan historias en los detalles.','La jungla urbana tambi\u00E9n tiene su verde.','Buen ojo para detalles callejeros.','Esto dice mucho de este lugar.'],
+      object: ['El desgaste cuenta toda la historia.','Las cosas llevan una larga memoria.','Me encanta el car\u00E1cter en esto.','Hay belleza en las cosas que perduran.'],
+      fallback: ['Hermoso. Esto es \uC815(\u60C5).','Me gusta esta perspectiva.','Se siente calidez real aqu\u00ED.','Adici\u00F3n perfecta a la cadena.']
+    },
+    bn: {
+      food: ['\u0985\u09B8\u09BE\u09A7\u09BE\u09B0\u09A3! \u099F\u09C7\u0995\u09CD\u09B8\u099A\u09BE\u09B0\u099F\u09BE \u09A6\u09BE\u09B0\u09C1\u09A3\u0964','\u0996\u09BF\u09A6\u09C7 \u09AA\u09C7\u09DF\u09C7 \u0997\u09C7\u09B2\u09BE\u09AE\u2026 \u099B\u09AC\u09BF\u099F\u09BE \u0985\u09B8\u09BE\u09A7\u09BE\u09B0\u09A3\u0964','\u098F\u0987 \u0996\u09BE\u09AC\u09BE\u09B0\u09C7 \u098F\u0995\u099F\u09BE \u09AA\u09C1\u09B0\u09CB \u0997\u09B2\u09CD\u09AA\u0964','\u098F\u0987 \u09B0\u0999\u0997\u09C1\u09B2\u09CB \u09AD\u09BE\u09B2\u09CB \u09B2\u09BE\u0997\u099B\u09C7\u0964'],
+      nature: ['\u09AA\u09CD\u09B0\u09BE\u09A3\u09C7 \u09AD\u09B0\u09BE\u0964 \u09A8\u09BF\u0983\u09B6\u09CD\u09AC\u09BE\u09B8\u099F\u09BE \u09AF\u09C7\u09A8 \u0985\u09A8\u09C1\u09AD\u09AC \u0995\u09B0\u09BE \u09AF\u09BE\u09AF\u09BC\u0964','\u09B8\u09C1\u09A8\u09CD\u09A6\u09B0 \u09B8\u09AC\u09C1\u099C\u0964 \u09AA\u09CD\u09B0\u0995\u09C3\u09A4\u09BF \u09B8\u09AC\u09B8\u09AE\u09AF\u09BC \u09AA\u09A5 \u0996\u09C1\u0981\u099C\u09C7 \u09A8\u09C7\u09AF\u09BC\u0964','\u098F\u0987 \u09B6\u09BE\u09A8\u09CD\u09A4\u09BF\u0987 \u09B8\u09AC\u0964','\u099A\u09AE\u09CE\u0995\u09BE\u09B0 \u09AE\u09C1\u09B9\u09C2\u09B0\u09CD\u09A4\u0964'],
+      city: ['\u09B6\u09B9\u09B0\u0997\u09C1\u09B2\u09CB \u09AF\u09C7\u09AD\u09BE\u09AC\u09C7 \u09AC\u09BF\u09B8\u09CD\u09A4\u09BE\u09B0\u09BF\u09A4\u09C7 \u0997\u09B2\u09CD\u09AA \u09AC\u09B2\u09C7 \u09B8\u09C7\u099F\u09BE \u09AD\u09BE\u09B2\u09CB \u09B2\u09BE\u0997\u09C7\u0964','\u09B6\u09B9\u09B0\u09C7\u09B0 \u099C\u0999\u09CD\u0997\u09B2\u09C7\u0993 \u09B8\u09AC\u09C1\u099C \u0986\u099B\u09C7\u0964','\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE\u09B0 \u09AC\u09BF\u09B8\u09CD\u09A4\u09BE\u09B0\u09BF\u09A4\u09C7 \u099A\u09CB\u0996 \u09AD\u09BE\u09B2\u09CB\u0964','\u098F\u099F\u09BE \u098F\u0987 \u099C\u09BE\u09AF\u09BC\u0997\u09BE \u09B8\u09AE\u09CD\u09AA\u09B0\u09CD\u0995\u09C7 \u0985\u09A8\u09C7\u0995 \u0995\u09BF\u099B\u09C1 \u09AC\u09B2\u09C7\u0964'],
+      object: ['\u099C\u09C0\u09B0\u09CD\u09A3\u09A4\u09BE\u0987 \u09AA\u09C1\u09B0\u09CB \u0997\u09B2\u09CD\u09AA \u09AC\u09B2\u09C7\u0964','\u099C\u09BF\u09A8\u09BF\u09B8\u0997\u09C1\u09B2\u09CB \u09A6\u09C0\u09B0\u09CD\u0998 \u09B8\u09CD\u09AE\u09C3\u09A4\u09BF \u09AC\u09B9\u09A8 \u0995\u09B0\u09C7\u0964','\u098F\u09B0 \u099A\u09B0\u09BF\u09A4\u09CD\u09B0\u099F\u09BE \u09AD\u09BE\u09B2\u09CB \u09B2\u09BE\u0997\u099B\u09C7\u0964','\u09AF\u09C7 \u099C\u09BF\u09A8\u09BF\u09B8 \u099F\u09BF\u0995\u09C7 \u09A5\u09BE\u0995\u09C7 \u09A4\u09BE\u09A4\u09C7 \u09B8\u09CC\u09A8\u09CD\u09A6\u09B0\u09CD\u09AF \u0986\u099B\u09C7\u0964'],
+      fallback: ['\u09B8\u09C1\u09A8\u09CD\u09A6\u09B0\u0964 \u098F\u099F\u09BE\u0987 \uC815(\u60C5)\u0964','\u098F\u0987 \u09A6\u09C3\u09B7\u09CD\u099F\u09BF\u09AD\u0999\u09CD\u0997\u09BF \u09AD\u09BE\u09B2\u09CB \u09B2\u09C7\u0997\u09C7\u099B\u09C7\u0964','\u098F\u0996\u09BE\u09A8\u09C7 \u09AA\u09CD\u09B0\u0995\u09C3\u09A4 \u0989\u09B7\u09CD\u09A3\u09A4\u09BE \u0985\u09A8\u09C1\u09AD\u09AC \u09B9\u09AF\u09BC\u0964','\u099A\u09C7\u0987\u09A8\u09C7 \u099A\u09AE\u09CE\u0995\u09BE\u09B0 \u09B8\u0982\u09AF\u09CB\u099C\u09A8\u0964']
+    },
+    ur: {
+      food: ['\u0628\u06C1\u062A \u0644\u0630\u06CC\u0630 \u0644\u06AF \u0631\u06C1\u0627 \u06C1\u06D2! \u0628\u0646\u0627\u0648\u0679 \u06A9\u0645\u0627\u0644 \u06C1\u06D2\u06D4','\u0628\u06BE\u0648\u06A9 \u0644\u06AF \u0622\u0626\u06CC\u2026 \u0628\u06C1\u062A\u0631\u06CC\u0646 \u062A\u0635\u0648\u06CC\u0631\u06D4','\u0627\u0633 \u06A9\u06BE\u0646\u06D2 \u0645\u06CC\u06BA \u067E\u0648\u0631\u06CC \u06A9\u06C1\u0627\u0646\u06CC \u06C1\u06D2\u06D4','\u0627\u0633 \u06A9\u06BE\u0646\u06D2 \u06A9\u06D2 \u0631\u0646\u06AF \u0628\u06C1\u062A \u067E\u0633\u0646\u062F \u0622\u0626\u06D2\u06D4'],
+      nature: ['\u0632\u0646\u062F\u06AF\u06CC \u0633\u06D2 \u0628\u06BE\u0631\u067E\u0648\u0631\u06D4 \u0633\u0627\u0646\u0633 \u0645\u062D\u0633\u0648\u0633 \u06C1\u0648\u062A\u06CC \u06C1\u06D2\u06D4','\u062E\u0648\u0628\u0635\u0648\u0631\u062A \u0633\u0628\u0632\u0627\u06D4 \u0642\u062F\u0631\u062A \u06C1\u0645\u06CC\u0634\u06C1 \u0631\u0627\u0633\u062A\u06C1 \u0688\u06BE\u0648\u0646\u0688 \u0644\u06CC\u062A\u06CC \u06C1\u06D2\u06D4','\u06CC\u06C1 \u0633\u06A9\u0648\u0646 \u06C1\u06CC \u0633\u0628 \u06A9\u0686\u06BE \u06C1\u06D2\u06D4','\u06A9\u0627\u0645\u0644 \u0644\u0645\u062D\u06C1\u06D4'],
+      city: ['\u0634\u06C1\u0631 \u0627\u067E\u0646\u06CC \u06A9\u06C1\u0627\u0646\u06CC\u0627\u06BA \u062A\u0641\u0635\u06CC\u0644\u0627\u062A \u0645\u06CC\u06BA \u0633\u0646\u0627\u062A\u06D2 \u06C1\u06CC\u06BA\u06D4','\u0634\u06C1\u0631\u06CC \u062C\u0646\u06AF\u0644 \u0645\u06CC\u06BA \u0628\u06BE\u06CC \u0633\u0628\u0632\u06C1 \u06C1\u06D2\u06D4','\u06AF\u0644\u06CC \u06A9\u06CC \u062A\u0641\u0635\u06CC\u0644\u0627\u062A \u067E\u0631 \u0627\u0686\u06BE\u06CC \u0646\u0638\u0631\u06D4','\u06CC\u06C1 \u0627\u0633 \u062C\u06AF\u06C1 \u06A9\u06D2 \u0628\u0627\u0631\u06D2 \u0628\u06C1\u062A \u06A9\u0686\u06BE \u0628\u062A\u0627\u062A\u0627 \u06C1\u06D2\u06D4'],
+      object: ['\u067E\u0631\u0627\u0646\u0627\u067E\u0646 \u067E\u0648\u0631\u06CC \u06A9\u06C1\u0627\u0646\u06CC \u0633\u0646\u0627\u062A\u0627 \u06C1\u06D2\u06D4','\u0686\u06CC\u0632\u06CC\u06BA \u0644\u0645\u0628\u06CC \u06CC\u0627\u062F\u06CC\u06BA \u0631\u06A9\u06BE\u062A\u06CC \u06C1\u06CC\u06BA\u06D4','\u0627\u0633 \u06A9\u0627 \u06A9\u0631\u062F\u0627\u0631 \u067E\u0633\u0646\u062F \u0622\u06CC\u0627\u06D4','\u062C\u0648 \u0686\u06CC\u0632\u06CC\u06BA \u0642\u0627\u0626\u0645 \u0631\u06C1\u062A\u06CC \u06C1\u06CC\u06BA \u0627\u0646 \u0645\u06CC\u06BA \u062E\u0648\u0628\u0635\u0648\u0631\u062A\u06CC \u06C1\u06D2\u06D4'],
+      fallback: ['\u062E\u0648\u0628\u0635\u0648\u0631\u062A\u06D4 \u06CC\u06C1\u06CC \uC815(\u60C5) \u06C1\u06D2\u06D4','\u06CC\u06C1 \u0646\u0638\u0631\u06CC\u06C1 \u067E\u0633\u0646\u062F \u0622\u06CC\u0627\u06D4','\u06CC\u06C1\u0627\u06BA \u0633\u0686\u06CC \u06AF\u0631\u0645\u0627\u06C1\u0679 \u0645\u062D\u0633\u0648\u0633 \u06C1\u0648\u062A\u06CC \u06C1\u06D2\u06D4','\u0686\u06CC\u0646 \u0645\u06CC\u06BA \u0628\u06C1\u062A\u0631\u06CC\u0646 \u0627\u0636\u0627\u0641\u06C1\u06D4']
+    }
+  };
+  var JZ = JZ_I18N.en; // default fallback
+
+  /* ── Multilingual bot messages ── */
+  var BOT_I18N = {
+    en: {
+      start_new: '\uD83C\uDD95 Start new \uC815(\u60C5)',
+      depart_prompt: '\u2728 {name}\u2019s \uC815(\u60C5) departs from {city}!\n\n\uD83D\uDCF7 Send a photo. You can add a caption (200 chars max).',
+      add_caption: '\uD83D\uDCDD Add a caption to your photo!',
+      checking: '\uD83D\uDD0D Moderator checking',
+      moderator: '\u2705 moderator',
+      mission_suggest: '\uD83D\uDCF8 AI suggested a mission:',
+      mission_use: '\u2705 Use this',
+      mission_write: '\u270F\uFE0F Write my own',
+      mission_skip: '\uD83D\uDEAB No mission',
+      mission_confirm: '\u2705 Mission: \u201C{mission}\u201D',
+      depart: '\uD83C\uDF31 {flag} \uC815(\u60C5) departs from {city}! Traveling around the world\u2026',
+      mission_label: 'mission',
+      mission_meta: '{flag} {city} \u2192 the world',
+      arrived: '\uD83D\uDCEC \uC815(\u60C5) from {city} has arrived! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 Mission: {mission}',
+      btn_relay: '\u270F\uFE0F Relay',
+      btn_skip: '\u23E9 Skip',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 Send a photo! You can add a caption (200 chars max).',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 Moving to next timezone\u2026',
+      meanwhile: 'Meanwhile in {flag} {city}\u2026',
+      waiting: 'Waiting for the next city\u2026'
+    },
+    ko: {
+      start_new: '\uD83C\uDD95 \uC0C8\uB85C\uC6B4 \uC815(\u60C5) \uB9CC\uB4E4\uAE30',
+      depart_prompt: '\u2728 {city}\uC5D0\uC11C {name}\uB2D8\uC758 \uC815(\u60C5)\uC774 \uCD9C\uBC1C\uD569\uB2C8\uB2E4!\n\n\uD83D\uDCF7 \uC0AC\uC9C4\uC744 \uBCF4\uB0B4\uC8FC\uC138\uC694. \uCEA1\uC158(200\uC790 \uC774\uB0B4)\uB3C4 \uD568\uAED8 \uC4F8 \uC218 \uC788\uC5B4\uC694.',
+      add_caption: '\uD83D\uDCDD \uC0AC\uC9C4\uC5D0 \uCEA1\uC158\uC744 \uB2EC\uC544\uC8FC\uC138\uC694!',
+      checking: '\uD83D\uDD0D \uC815\uC9C0\uAE30\uAC00 \uD655\uC778 \uC911',
+      moderator: '\u2705 \uC815\uC9C0\uAE30',
+      mission_suggest: '\uD83D\uDCF8 AI\uAC00 \uBBF8\uC158\uC744 \uC81C\uC548\uD588\uC5B4\uC694:',
+      mission_use: '\u2705 \uC0AC\uC6A9\uD560\uB798\uC694',
+      mission_write: '\u270F\uFE0F \uC9C1\uC811 \uC4F8\uB798\uC694',
+      mission_skip: '\uD83D\uDEAB \uBBF8\uC158 \uC5C6\uC774',
+      mission_confirm: '\u2705 \uBBF8\uC158: \u201C{mission}\u201D',
+      depart: '\uD83C\uDF31 {flag} {city}\uC5D0\uC11C \uC815(\u60C5)\uC774 \uCD9C\uBC1C\uD569\uB2C8\uB2E4! \uC138\uACC4\uB97C \uB3CC\uACE0 \uC788\uC5B4\uC694\u2026',
+      mission_label: '\uBBF8\uC158',
+      mission_meta: '{flag} {city} \u2192 \uC138\uACC4\uB85C',
+      arrived: '\uD83D\uDCEC {city}\uC5D0\uC11C \uC815(\u60C5)\uC774 \uB3C4\uCC29\uD588\uC5B4\uC694! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \uBBF8\uC158: {mission}',
+      btn_relay: '\u270F\uFE0F \uC774\uC5B4\uC4F0\uAE30',
+      btn_skip: '\u23E9 \uC2A4\uD0B5',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \uC0AC\uC9C4\uC744 \uBCF4\uB0B4\uC8FC\uC138\uC694! \uCEA1\uC158(200\uC790 \uC774\uB0B4)\uB3C4 \uD568\uAED8 \uC4F8 \uC218 \uC788\uC5B4\uC694.',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \uB2E4\uC74C \uD0C0\uC784\uC874\uC73C\uB85C \uC774\uB3D9 \uC911\u2026',
+      meanwhile: '\uD55C\uD3B8 {flag} {city}\uC5D0\uC11C\uB294\u2026',
+      waiting: '\uB2E4\uC74C \uB3C4\uC2DC\uB97C \uAE30\uB2E4\uB9AC\uB294 \uC911\u2026'
+    },
+    ja: {
+      start_new: '\uD83C\uDD95 \u65B0\u3057\u3044\uC815(\u60C5)\u3092\u59CB\u3081\u308B',
+      depart_prompt: '\u2728 {city}\u304B\u3089{name}\u306E\uC815(\u60C5)\u304C\u51FA\u767A\uFF01\n\n\uD83D\uDCF7 \u5199\u771F\u3092\u9001\u3063\u3066\u304F\u3060\u3055\u3044\u3002\u30AD\u30E3\u30D7\u30B7\u30E7\u30F3(200\u5B57\u4EE5\u5185)\u3082\u66F8\u3051\u307E\u3059\u3002',
+      add_caption: '\uD83D\uDCDD \u5199\u771F\u306B\u30AD\u30E3\u30D7\u30B7\u30E7\u30F3\u3092\u4ED8\u3051\u3066\u304F\u3060\u3055\u3044\uFF01',
+      checking: '\uD83D\uDD0D \u30E2\u30C7\u30EC\u30FC\u30BF\u30FC\u78BA\u8A8D\u4E2D',
+      moderator: '\u2705 \u30E2\u30C7\u30EC\u30FC\u30BF\u30FC',
+      mission_suggest: '\uD83D\uDCF8 AI\u304C\u30DF\u30C3\u30B7\u30E7\u30F3\u3092\u63D0\u6848:',
+      mission_use: '\u2705 \u3053\u308C\u3067',
+      mission_write: '\u270F\uFE0F \u81EA\u5206\u3067\u66F8\u304F',
+      mission_skip: '\uD83D\uDEAB \u30DF\u30C3\u30B7\u30E7\u30F3\u306A\u3057',
+      mission_confirm: '\u2705 \u30DF\u30C3\u30B7\u30E7\u30F3: \u300C{mission}\u300D',
+      depart: '\uD83C\uDF31 {flag} {city}\u304B\u3089\uC815(\u60C5)\u304C\u51FA\u767A\uFF01\u4E16\u754C\u3092\u5DE1\u3063\u3066\u3044\u307E\u3059\u2026',
+      mission_label: '\u30DF\u30C3\u30B7\u30E7\u30F3',
+      mission_meta: '{flag} {city} \u2192 \u4E16\u754C\u3078',
+      arrived: '\uD83D\uDCEC {city}\u304B\u3089\uC815(\u60C5)\u304C\u5C4A\u304D\u307E\u3057\u305F\uFF01({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u30DF\u30C3\u30B7\u30E7\u30F3: {mission}',
+      btn_relay: '\u270F\uFE0F \u30EA\u30EC\u30FC',
+      btn_skip: '\u23E9 \u30B9\u30AD\u30C3\u30D7',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u5199\u771F\u3092\u9001\u3063\u3066\u304F\u3060\u3055\u3044\uFF01\u30AD\u30E3\u30D7\u30B7\u30E7\u30F3(200\u5B57\u4EE5\u5185)\u3082\u66F8\u3051\u307E\u3059\u3002',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u6B21\u306E\u30BF\u30A4\u30E0\u30BE\u30FC\u30F3\u3078\u79FB\u52D5\u4E2D\u2026',
+      meanwhile: '\u305D\u306E\u9803{flag} {city}\u3067\u306F\u2026',
+      waiting: '\u6B21\u306E\u90FD\u5E02\u3092\u5F85\u3063\u3066\u3044\u307E\u3059\u2026'
+    },
+    zh: {
+      start_new: '\uD83C\uDD95 \u521B\u5EFA\u65B0\u7684\uC815(\u60C5)',
+      depart_prompt: '\u2728 {name}\u7684\uC815(\u60C5)\u4ECE{city}\u51FA\u53D1\uFF01\n\n\uD83D\uDCF7 \u8BF7\u53D1\u9001\u7167\u7247\uFF0C\u53EF\u4EE5\u9644\u52A0\u6587\u5B57\u8BF4\u660E(200\u5B57\u4EE5\u5185)\u3002',
+      add_caption: '\uD83D\uDCDD \u7ED9\u7167\u7247\u52A0\u4E0A\u6587\u5B57\u8BF4\u660E\u5427\uFF01',
+      checking: '\uD83D\uDD0D \u7BA1\u7406\u5458\u68C0\u67E5\u4E2D',
+      moderator: '\u2705 \u7BA1\u7406\u5458',
+      mission_suggest: '\uD83D\uDCF8 AI\u5EFA\u8BAE\u4E86\u4E00\u4E2A\u4EFB\u52A1:',
+      mission_use: '\u2705 \u4F7F\u7528\u8FD9\u4E2A',
+      mission_write: '\u270F\uFE0F \u81EA\u5DF1\u5199',
+      mission_skip: '\uD83D\uDEAB \u4E0D\u8981\u4EFB\u52A1',
+      mission_confirm: '\u2705 \u4EFB\u52A1: \u201C{mission}\u201D',
+      depart: '\uD83C\uDF31 {flag} \uC815(\u60C5)\u4ECE{city}\u51FA\u53D1\uFF01\u6B63\u5728\u73AF\u6E38\u4E16\u754C\u2026',
+      mission_label: '\u4EFB\u52A1',
+      mission_meta: '{flag} {city} \u2192 \u4E16\u754C',
+      arrived: '\uD83D\uDCEC \u6765\u81EA{city}\u7684\uC815(\u60C5)\u5230\u8FBE\u4E86\uFF01({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u4EFB\u52A1: {mission}',
+      btn_relay: '\u270F\uFE0F \u63A5\u529B',
+      btn_skip: '\u23E9 \u8DF3\u8FC7',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u8BF7\u53D1\u9001\u7167\u7247\uFF01\u53EF\u4EE5\u9644\u52A0\u6587\u5B57\u8BF4\u660E(200\u5B57\u4EE5\u5185)\u3002',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u6B63\u5728\u79FB\u5411\u4E0B\u4E00\u4E2A\u65F6\u533A\u2026',
+      meanwhile: '\u4E0E\u6B64\u540C\u65F6\u5728{flag} {city}\u2026',
+      waiting: '\u7B49\u5F85\u4E0B\u4E00\u4E2A\u57CE\u5E02\u2026'
+    },
+    th: {
+      start_new: '\uD83C\uDD95 \u0E2A\u0E23\u0E49\u0E32\u0E07\uC815(\u60C5)\u0E43\u0E2B\u0E21\u0E48',
+      depart_prompt: '\u2728 \uC815(\u60C5)\u0E02\u0E2D\u0E07{name}\u0E2D\u0E2D\u0E01\u0E40\u0E14\u0E34\u0E19\u0E17\u0E32\u0E07\u0E08\u0E32\u0E01{city}!\n\n\uD83D\uDCF7 \u0E2A\u0E48\u0E07\u0E23\u0E39\u0E1B\u0E21\u0E32\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22 \u0E40\u0E02\u0E35\u0E22\u0E19\u0E41\u0E04\u0E1B\u0E0A\u0E31\u0E48\u0E19(200\u0E15\u0E31\u0E27\u0E2D\u0E31\u0E01\u0E29\u0E23)\u0E44\u0E14\u0E49\u0E14\u0E49\u0E27\u0E22',
+      add_caption: '\uD83D\uDCDD \u0E40\u0E02\u0E35\u0E22\u0E19\u0E41\u0E04\u0E1B\u0E0A\u0E31\u0E48\u0E19\u0E43\u0E2B\u0E49\u0E23\u0E39\u0E1B\u0E2B\u0E19\u0E48\u0E2D\u0E22!',
+      checking: '\uD83D\uDD0D \u0E1C\u0E39\u0E49\u0E14\u0E39\u0E41\u0E25\u0E01\u0E33\u0E25\u0E31\u0E07\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A',
+      moderator: '\u2705 \u0E1C\u0E39\u0E49\u0E14\u0E39\u0E41\u0E25',
+      mission_suggest: '\uD83D\uDCF8 AI \u0E41\u0E19\u0E30\u0E19\u0E33\u0E20\u0E32\u0E23\u0E01\u0E34\u0E08:',
+      mission_use: '\u2705 \u0E43\u0E0A\u0E49\u0E40\u0E25\u0E22',
+      mission_write: '\u270F\uFE0F \u0E40\u0E02\u0E35\u0E22\u0E19\u0E40\u0E2D\u0E07',
+      mission_skip: '\uD83D\uDEAB \u0E44\u0E21\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E20\u0E32\u0E23\u0E01\u0E34\u0E08',
+      mission_confirm: '\u2705 \u0E20\u0E32\u0E23\u0E01\u0E34\u0E08: \u201C{mission}\u201D',
+      depart: '\uD83C\uDF31 {flag} \uC815(\u60C5)\u0E2D\u0E2D\u0E01\u0E40\u0E14\u0E34\u0E19\u0E17\u0E32\u0E07\u0E08\u0E32\u0E01{city}! \u0E01\u0E33\u0E25\u0E31\u0E07\u0E40\u0E14\u0E34\u0E19\u0E17\u0E32\u0E07\u0E23\u0E2D\u0E1A\u0E42\u0E25\u0E01\u2026',
+      mission_label: '\u0E20\u0E32\u0E23\u0E01\u0E34\u0E08',
+      mission_meta: '{flag} {city} \u2192 \u0E42\u0E25\u0E01',
+      arrived: '\uD83D\uDCEC \uC815(\u60C5)\u0E08\u0E32\u0E01{city}\u0E21\u0E32\u0E16\u0E36\u0E07\u0E41\u0E25\u0E49\u0E27! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u0E20\u0E32\u0E23\u0E01\u0E34\u0E08: {mission}',
+      btn_relay: '\u270F\uFE0F \u0E15\u0E48\u0E2D\u0E40\u0E23\u0E37\u0E48\u0E2D\u0E07',
+      btn_skip: '\u23E9 \u0E02\u0E49\u0E32\u0E21',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u0E2A\u0E48\u0E07\u0E23\u0E39\u0E1B\u0E21\u0E32\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22! \u0E40\u0E02\u0E35\u0E22\u0E19\u0E41\u0E04\u0E1B\u0E0A\u0E31\u0E48\u0E19(200\u0E15\u0E31\u0E27\u0E2D\u0E31\u0E01\u0E29\u0E23)\u0E44\u0E14\u0E49\u0E14\u0E49\u0E27\u0E22',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u0E01\u0E33\u0E25\u0E31\u0E07\u0E44\u0E1B\u0E44\u0E17\u0E21\u0E4C\u0E42\u0E0B\u0E19\u0E16\u0E31\u0E14\u0E44\u0E1B\u2026',
+      meanwhile: '\u0E02\u0E13\u0E30\u0E40\u0E14\u0E35\u0E22\u0E27\u0E01\u0E31\u0E19\u0E17\u0E35\u0E48{flag} {city}\u2026',
+      waiting: '\u0E23\u0E2D\u0E40\u0E21\u0E37\u0E2D\u0E07\u0E16\u0E31\u0E14\u0E44\u0E1B\u2026'
+    },
+    fr: {
+      start_new: '\uD83C\uDD95 Cr\u00E9er une nouvelle \uC815(\u60C5)',
+      depart_prompt: '\u2728 La \uC815(\u60C5) de {name} part de {city} !\n\n\uD83D\uDCF7 Envoyez une photo. Vous pouvez ajouter une l\u00E9gende (200 caract\u00E8res max).',
+      add_caption: '\uD83D\uDCDD Ajoutez une l\u00E9gende \u00E0 votre photo !',
+      checking: '\uD83D\uDD0D V\u00E9rification par le mod\u00E9rateur',
+      moderator: '\u2705 mod\u00E9rateur',
+      mission_suggest: '\uD83D\uDCF8 L\u2019IA a sugg\u00E9r\u00E9 une mission :',
+      mission_use: '\u2705 Utiliser',
+      mission_write: '\u270F\uFE0F \u00C9crire la mienne',
+      mission_skip: '\uD83D\uDEAB Pas de mission',
+      mission_confirm: '\u2705 Mission : \u00AB {mission} \u00BB',
+      depart: '\uD83C\uDF31 {flag} La \uC815(\u60C5) part de {city} ! En route autour du monde\u2026',
+      mission_label: 'mission',
+      mission_meta: '{flag} {city} \u2192 le monde',
+      arrived: '\uD83D\uDCEC La \uC815(\u60C5) de {city} est arriv\u00E9e ! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 Mission : {mission}',
+      btn_relay: '\u270F\uFE0F Relayer',
+      btn_skip: '\u23E9 Passer',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 Envoyez une photo ! L\u00E9gende (200 car. max) possible.',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 En route vers le prochain fuseau\u2026',
+      meanwhile: 'Pendant ce temps \u00E0 {flag} {city}\u2026',
+      waiting: 'En attente de la prochaine ville\u2026'
+    },
+    ar: {
+      start_new: '\uD83C\uDD95 \u0625\u0646\u0634\u0627\u0621 \uC815(\u60C5) \u062C\u062F\u064A\u062F\u0629',
+      depart_prompt: '\u2728 \uC815(\u60C5) {name} \u062A\u0646\u0637\u0644\u0642 \u0645\u0646 {city}!\n\n\uD83D\uDCF7 \u0623\u0631\u0633\u0644 \u0635\u0648\u0631\u0629. \u064A\u0645\u0643\u0646\u0643 \u0625\u0636\u0627\u0641\u0629 \u062A\u0639\u0644\u064A\u0642 (200 \u062D\u0631\u0641 \u0643\u062D\u062F \u0623\u0642\u0635\u0649).',
+      add_caption: '\uD83D\uDCDD \u0623\u0636\u0641 \u062A\u0639\u0644\u064A\u0642\u0627\u064B \u0639\u0644\u0649 \u0635\u0648\u0631\u062A\u0643!',
+      checking: '\uD83D\uDD0D \u0627\u0644\u0645\u0634\u0631\u0641 \u064A\u062A\u062D\u0642\u0642',
+      moderator: '\u2705 \u0627\u0644\u0645\u0634\u0631\u0641',
+      mission_suggest: '\uD83D\uDCF8 \u0627\u0642\u062A\u0631\u062D \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A \u0645\u0647\u0645\u0629:',
+      mission_use: '\u2705 \u0627\u0633\u062A\u062E\u062F\u0645 \u0647\u0630\u0647',
+      mission_write: '\u270F\uFE0F \u0623\u0643\u062A\u0628 \u0628\u0646\u0641\u0633\u064A',
+      mission_skip: '\uD83D\uDEAB \u0628\u062F\u0648\u0646 \u0645\u0647\u0645\u0629',
+      mission_confirm: '\u2705 \u0627\u0644\u0645\u0647\u0645\u0629: \u00AB{mission}\u00BB',
+      depart: '\uD83C\uDF31 {flag} \uC815(\u60C5) \u062A\u0646\u0637\u0644\u0642 \u0645\u0646 {city}! \u062A\u062F\u0648\u0631 \u062D\u0648\u0644 \u0627\u0644\u0639\u0627\u0644\u0645\u2026',
+      mission_label: '\u0627\u0644\u0645\u0647\u0645\u0629',
+      mission_meta: '{flag} {city} \u2192 \u0627\u0644\u0639\u0627\u0644\u0645',
+      arrived: '\uD83D\uDCEC \uC815(\u60C5) \u0645\u0646 {city} \u0648\u0635\u0644\u062A! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u0627\u0644\u0645\u0647\u0645\u0629: {mission}',
+      btn_relay: '\u270F\uFE0F \u0645\u0631\u0631',
+      btn_skip: '\u23E9 \u062A\u062E\u0637\u0651',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u0623\u0631\u0633\u0644 \u0635\u0648\u0631\u0629! \u064A\u0645\u0643\u0646\u0643 \u0625\u0636\u0627\u0641\u0629 \u062A\u0639\u0644\u064A\u0642 (200 \u062D\u0631\u0641 \u0643\u062D\u062F \u0623\u0642\u0635\u0649).',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u0627\u0644\u0627\u0646\u062A\u0642\u0627\u0644 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0632\u0645\u0646\u064A\u0629 \u0627\u0644\u062A\u0627\u0644\u064A\u0629\u2026',
+      meanwhile: '\u0641\u064A \u0647\u0630\u0647 \u0627\u0644\u0623\u062B\u0646\u0627\u0621 \u0641\u064A {flag} {city}\u2026',
+      waiting: '\u0628\u0627\u0646\u062A\u0638\u0627\u0631 \u0627\u0644\u0645\u062F\u064A\u0646\u0629 \u0627\u0644\u062A\u0627\u0644\u064A\u0629\u2026'
+    },
+    ru: {
+      start_new: '\uD83C\uDD95 \u041D\u043E\u0432\u0430\u044F \uC815(\u60C5)',
+      depart_prompt: '\u2728 \uC815(\u60C5) {name} \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442\u0441\u044F \u0438\u0437 {city}!\n\n\uD83D\uDCF7 \u041E\u0442\u043F\u0440\u0430\u0432\u044C\u0442\u0435 \u0444\u043E\u0442\u043E. \u041C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u0434\u043F\u0438\u0441\u044C (200 \u0441\u0438\u043C\u0432.).',
+      add_caption: '\uD83D\uDCDD \u0414\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u043F\u043E\u0434\u043F\u0438\u0441\u044C \u043A \u0444\u043E\u0442\u043E!',
+      checking: '\uD83D\uDD0D \u041C\u043E\u0434\u0435\u0440\u0430\u0442\u043E\u0440 \u043F\u0440\u043E\u0432\u0435\u0440\u044F\u0435\u0442',
+      moderator: '\u2705 \u043C\u043E\u0434\u0435\u0440\u0430\u0442\u043E\u0440',
+      mission_suggest: '\uD83D\uDCF8 \u0418\u0418 \u043F\u0440\u0435\u0434\u043B\u043E\u0436\u0438\u043B \u043C\u0438\u0441\u0441\u0438\u044E:',
+      mission_use: '\u2705 \u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C',
+      mission_write: '\u270F\uFE0F \u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u0441\u0432\u043E\u044E',
+      mission_skip: '\uD83D\uDEAB \u0411\u0435\u0437 \u043C\u0438\u0441\u0441\u0438\u0438',
+      mission_confirm: '\u2705 \u041C\u0438\u0441\u0441\u0438\u044F: \u00AB{mission}\u00BB',
+      depart: '\uD83C\uDF31 {flag} \uC815(\u60C5) \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442\u0441\u044F \u0438\u0437 {city}! \u041F\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0443\u0435\u0442 \u043F\u043E \u043C\u0438\u0440\u0443\u2026',
+      mission_label: '\u043C\u0438\u0441\u0441\u0438\u044F',
+      mission_meta: '{flag} {city} \u2192 \u043C\u0438\u0440',
+      arrived: '\uD83D\uDCEC \uC815(\u60C5) \u0438\u0437 {city} \u043F\u0440\u0438\u0431\u044B\u043B\u0430! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u041C\u0438\u0441\u0441\u0438\u044F: {mission}',
+      btn_relay: '\u270F\uFE0F \u041F\u0435\u0440\u0435\u0434\u0430\u0442\u044C',
+      btn_skip: '\u23E9 \u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u041E\u0442\u043F\u0440\u0430\u0432\u044C\u0442\u0435 \u0444\u043E\u0442\u043E! \u041C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u0434\u043F\u0438\u0441\u044C (200 \u0441\u0438\u043C\u0432.).',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u041F\u0435\u0440\u0435\u0445\u043E\u0434 \u0432 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0447\u0430\u0441\u043E\u0432\u043E\u0439 \u043F\u043E\u044F\u0441\u2026',
+      meanwhile: '\u0422\u0435\u043C \u0432\u0440\u0435\u043C\u0435\u043D\u0435\u043C \u0432 {flag} {city}\u2026',
+      waiting: '\u0416\u0434\u0451\u043C \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0433\u043E\u0440\u043E\u0434\u2026'
+    },
+    pt: {
+      start_new: '\uD83C\uDD95 Iniciar nova \uC815(\u60C5)',
+      depart_prompt: '\u2728 A \uC815(\u60C5) de {name} parte de {city}!\n\n\uD83D\uDCF7 Envie uma foto. Pode adicionar uma legenda (m\u00E1x 200 chars).',
+      add_caption: '\uD83D\uDCDD Adicione uma legenda \u00E0 sua foto!',
+      checking: '\uD83D\uDD0D Moderador verificando...',
+      moderator: 'moderador',
+      mission_suggest: '\uD83C\uDF31 Sugira uma miss\u00E3o para o pr\u00F3ximo:',
+      mission_use: 'Usar esta',
+      mission_write: 'Escrever',
+      mission_skip: 'Pular',
+      mission_confirm: '\u2705 Miss\u00E3o definida: \u201C{mission}\u201D',
+      depart: '\uD83D\uDE80 A \uC815(\u60C5) parte de {flag} {city}!',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 Envie uma foto! Pode adicionar legenda (200 chars).',
+      mission_label: 'miss\u00E3o',
+      mission_meta: '{flag} {city} \u2192 mundo',
+      arrived: '\uD83D\uDCEC \uC815(\u60C5) de {city} chegou! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 Miss\u00E3o: {mission}',
+      btn_relay: '\u270F\uFE0F Passar',
+      btn_skip: '\u23E9 Pular',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 Seguindo para o pr\u00F3ximo fuso\u2026',
+      meanwhile: 'Enquanto isso em {flag} {city}\u2026',
+      waiting: 'Aguardando pr\u00F3xima cidade\u2026'
+    },
+    es: {
+      start_new: '\uD83C\uDD95 Iniciar nueva \uC815(\u60C5)',
+      depart_prompt: '\u2728 \u00A1La \uC815(\u60C5) de {name} sale de {city}!\n\n\uD83D\uDCF7 Env\u00EDa una foto. Puedes a\u00F1adir un pie (m\u00E1x 200 chars).',
+      add_caption: '\uD83D\uDCDD \u00A1A\u00F1ade un pie a tu foto!',
+      checking: '\uD83D\uDD0D Moderador verificando...',
+      moderator: 'moderador',
+      mission_suggest: '\uD83C\uDF31 Sugiere una misi\u00F3n para el siguiente:',
+      mission_use: 'Usar esta',
+      mission_write: 'Escribir',
+      mission_skip: 'Saltar',
+      mission_confirm: '\u2705 Misi\u00F3n: \u201C{mission}\u201D',
+      depart: '\uD83D\uDE80 \u00A1La \uC815(\u60C5) sale de {flag} {city}!',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u00A1Env\u00EDa una foto! Puedes a\u00F1adir pie (200 chars).',
+      mission_label: 'misi\u00F3n',
+      mission_meta: '{flag} {city} \u2192 mundo',
+      arrived: '\uD83D\uDCEC \u00A1\uC815(\u60C5) de {city} lleg\u00F3! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 Misi\u00F3n: {mission}',
+      btn_relay: '\u270F\uFE0F Pasar',
+      btn_skip: '\u23E9 Saltar',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 Pasando al siguiente huso\u2026',
+      meanwhile: 'Mientras tanto en {flag} {city}\u2026',
+      waiting: 'Esperando la siguiente ciudad\u2026'
+    },
+    bn: {
+      start_new: '\uD83C\uDD95 \u09A8\u09A4\u09C1\u09A8 \uC815(\u60C5) \u09B6\u09C1\u09B0\u09C1',
+      depart_prompt: '\u2728 {name}-\u098F\u09B0 \uC815(\u60C5) {city} \u09A5\u09C7\u0995\u09C7 \u09AF\u09BE\u09A4\u09CD\u09B0\u09BE \u09B6\u09C1\u09B0\u09C1!\n\n\uD83D\uDCF7 \u098F\u0995\u099F\u09BF \u099B\u09AC\u09BF \u09AA\u09BE\u09A0\u09BE\u09A8\u0964 \u0995\u09CD\u09AF\u09BE\u09AA\u09B6\u09A8 \u09AF\u09CB\u0997 \u0995\u09B0\u09A4\u09C7 \u09AA\u09BE\u09B0\u09C7\u09A8 (200 \u0985\u0995\u09CD\u09B7\u09B0)\u0964',
+      add_caption: '\uD83D\uDCDD \u0986\u09AA\u09A8\u09BE\u09B0 \u099B\u09AC\u09BF\u09A4\u09C7 \u0995\u09CD\u09AF\u09BE\u09AA\u09B6\u09A8 \u09AF\u09CB\u0997 \u0995\u09B0\u09C1\u09A8!',
+      checking: '\uD83D\uDD0D \u09AE\u09A1\u09BE\u09B0\u09C7\u099F\u09B0 \u09AF\u09BE\u099A\u09BE\u0987 \u0995\u09B0\u099B\u09C7...',
+      moderator: '\u09AE\u09A1\u09BE\u09B0\u09C7\u099F\u09B0',
+      mission_suggest: '\uD83C\uDF31 \u09AA\u09B0\u09AC\u09B0\u09CD\u09A4\u09C0\u09B0 \u099C\u09A8\u09CD\u09AF \u09AE\u09BF\u09B6\u09A8 \u09AA\u09CD\u09B0\u09B8\u09CD\u09A4\u09BE\u09AC:',
+      mission_use: '\u098F\u099F\u09BF \u09AC\u09CD\u09AF\u09AC\u09B9\u09BE\u09B0',
+      mission_write: '\u09B2\u09BF\u0996\u09C1\u09A8',
+      mission_skip: '\u098F\u09DC\u09BF\u09AF\u09BC\u09C7 \u09AF\u09BE\u09A8',
+      mission_confirm: '\u2705 \u09AE\u09BF\u09B6\u09A8: \u201C{mission}\u201D',
+      depart: '\uD83D\uDE80 {flag} {city} \u09A5\u09C7\u0995\u09C7 \uC815(\u60C5) \u09AF\u09BE\u09A4\u09CD\u09B0\u09BE \u09B6\u09C1\u09B0\u09C1!',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u099B\u09AC\u09BF \u09AA\u09BE\u09A0\u09BE\u09A8! \u0995\u09CD\u09AF\u09BE\u09AA\u09B6\u09A8 \u09AF\u09CB\u0997 \u0995\u09B0\u09A4\u09C7 \u09AA\u09BE\u09B0\u09C7\u09A8 (200 \u0985\u0995\u09CD\u09B7\u09B0)\u0964',
+      mission_label: '\u09AE\u09BF\u09B6\u09A8',
+      mission_meta: '{flag} {city} \u2192 \u09AC\u09BF\u09B6\u09CD\u09AC',
+      arrived: '\uD83D\uDCEC {city} \u09A5\u09C7\u0995\u09C7 \uC815(\u60C5) \u098F\u09B8\u09C7\u099B\u09C7! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u09AE\u09BF\u09B6\u09A8: {mission}',
+      btn_relay: '\u270F\uFE0F \u09AA\u09BE\u09B8',
+      btn_skip: '\u23E9 \u098F\u09DC\u09BF\u09AF\u09BC\u09C7 \u09AF\u09BE\u09A8',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u09AA\u09B0\u09AC\u09B0\u09CD\u09A4\u09C0 \u099F\u09BE\u0987\u09AE\u099C\u09CB\u09A8\u09C7\u2026',
+      meanwhile: '\u098F\u09A6\u09BF\u0995\u09C7 {flag} {city}-\u09A4\u09C7\u2026',
+      waiting: '\u09AA\u09B0\u09AC\u09B0\u09CD\u09A4\u09C0 \u09B6\u09B9\u09B0\u09C7\u09B0 \u0985\u09AA\u09C7\u0995\u09CD\u09B7\u09BE\u09AF\u09BC\u2026'
+    },
+    ur: {
+      start_new: '\uD83C\uDD95 \u0646\u0626\u06CC \uC815(\u60C5) \u0634\u0631\u0648\u0639',
+      depart_prompt: '\u2728 {name} \u06A9\u06CC \uC815(\u60C5) {city} \u0633\u06D2 \u0631\u0648\u0627\u0646\u06C1!\n\n\uD83D\uDCF7 \u062A\u0635\u0648\u06CC\u0631 \u0628\u06BE\u06CC\u062C\u06CC\u06BA\u06D4 \u06A9\u06CC\u067E\u0634\u0646 \u0628\u06BE\u06CC \u0644\u06A9\u06BE \u0633\u06A9\u062A\u06D2 \u06C1\u06CC\u06BA (200 \u062D\u0631\u0648\u0641)\u06D4',
+      add_caption: '\uD83D\uDCDD \u0627\u067E\u0646\u06CC \u062A\u0635\u0648\u06CC\u0631 \u06A9\u06D2 \u0644\u06CC\u06D2 \u06A9\u06CC\u067E\u0634\u0646 \u0644\u06A9\u06BE\u06CC\u06BA!',
+      checking: '\uD83D\uDD0D \u0645\u0627\u0688\u0631\u06CC\u0679\u0631 \u062C\u0627\u0626\u0632\u06C1 \u0644\u06D2 \u0631\u06C1\u0627 \u06C1\u06D2...',
+      moderator: '\u0645\u0627\u0688\u0631\u06CC\u0679\u0631',
+      mission_suggest: '\uD83C\uDF31 \u0627\u06AF\u0644\u06D2 \u06A9\u06D2 \u0644\u06CC\u06D2 \u0645\u0634\u0646 \u062A\u062C\u0648\u06CC\u0632 \u06A9\u0631\u06CC\u06BA:',
+      mission_use: '\u06CC\u06C1 \u0627\u0633\u062A\u0639\u0645\u0627\u0644 \u06A9\u0631\u06CC\u06BA',
+      mission_write: '\u0644\u06A9\u06BE\u06CC\u06BA',
+      mission_skip: '\u0686\u06BE\u0648\u0691\u06CC\u06BA',
+      mission_confirm: '\u2705 \u0645\u0634\u0646: \u201C{mission}\u201D',
+      depart: '\uD83D\uDE80 {flag} {city} \u0633\u06D2 \uC815(\u60C5) \u0631\u0648\u0627\u0646\u06C1!',
+      send_photo: '\u270D\uFE0F {slot}/24\n\n\uD83D\uDCF7 \u062A\u0635\u0648\u06CC\u0631 \u0628\u06BE\u06CC\u062C\u06CC\u06BA! \u06A9\u06CC\u067E\u0634\u0646 (200 \u062D\u0631\u0648\u0641)\u06D4',
+      mission_label: '\u0645\u0634\u0646',
+      mission_meta: '{flag} {city} \u2192 \u062F\u0646\u06CC\u0627',
+      arrived: '\uD83D\uDCEC {city} \u0633\u06D2 \uC815(\u60C5) \u0622 \u06AF\u0626\u06CC! ({slot}/24)',
+      mission_sub: '\uD83D\uDCF8 \u0645\u0634\u0646: {mission}',
+      btn_relay: '\u270F\uFE0F \u0622\u06AF\u06D2 \u0628\u06BE\u06CC\u062C\u06CC\u06BA',
+      btn_skip: '\u23E9 \u0686\u06BE\u0648\u0691\u06CC\u06BA',
+      relay_confirm: '\u2705 {slot}/{total} \u00B7 \u0627\u06AF\u0644\u06D2 \u0679\u0627\u0626\u0645 \u0632\u0648\u0646 \u06A9\u06CC \u0637\u0631\u0641\u2026',
+      meanwhile: '\u0627\u0633 \u062F\u0648\u0631\u0627\u0646 {flag} {city} \u0645\u06CC\u06BA\u2026',
+      waiting: '\u0627\u06AF\u0644\u06D2 \u0634\u06C1\u0631 \u06A9\u0627 \u0627\u0646\u062A\u0638\u0627\u0631\u2026'
+    }
+  };
+
+  function botT(key, lang, params) {
+    var msgs = BOT_I18N[lang] || BOT_I18N.en;
+    var s = msgs[key] || BOT_I18N.en[key] || key;
+    if (params) {
+      Object.keys(params).forEach(function(k) {
+        s = s.split('{' + k + '}').join(params[k]);
+      });
+    }
+    return s;
+  }
+
+  function getJZ(lang) {
+    return JZ_I18N[lang] || JZ_I18N.en;
+  }
+  var KW = {
+    food: ['lunch','food','eat','coffee','cook','rice','soup','meal','dinner','breakfast','hungry','delicious','plate','kitchen','recipe','spicy','chili','pepper','tea','bread','noodle','\u98DF','\u98EF','\u6599\u7406','\u5348\u98EF','\u304A\u3044\u3057','\u98F2','\u7F8E\u5473','\u8089','\u83DC','\u7C73','\u6C34\u716E','\u5403','\u5580\u5561','\u0E02\u0E49\u0E32\u0E27','\u0E2D\u0E32\u0E2B\u0E32\u0E23','\u0E01\u0E34\u0E19','\u0E40\u0E1C\u0E47\u0E14','\u0E1E\u0E23\u0E34\u0E01','\u0E2A\u0E49\u0E21\u0E15\u0E33','\uBC25','\uCEE4\uD53C','\uC74C\uC2DD','\uB9C8\uC2DC','\uBA39'],
+    nature: ['green','tree','leaf','plant','garden','flower','sea','wave','ocean','water','sky','cloud','sun','sunrise','sunset','mountain','forest','grass','moss','aloe','lettuce','shore','tide','reef','\u7DD1','\u6D77','\u82B1','\u6728','\u5C71','\u6CB3','\u8349','\u690D\u7269','\u6C34','\u7A7A','\u96F2','\u85FB','\u521D\u65E5','\u8CBF\u6613\u98A8','\u0E17\u0E30\u0E40\u0E25','\u0E15\u0E49\u0E19\u0E44\u0E21\u0E49','\u0E14\u0E2D\u0E01\u0E44\u0E21\u0E49','\u0E2A\u0E35\u0E40\u0E02\u0E35\u0E22\u0E27','\uBC14\uB2E4','\uD558\uB298','\uB098\uBB34','\uAF43','\uCD08\uB85D'],
+    city: ['city','street','sidewalk','building','urban','traffic','neon','concrete','pavement','road','station','pedestrian','bus','train','cafe','window','door','sign','block','corner','\u901A\u308A','\u9053','\u99C5','\u30AB\u30D5\u30A7','\u5E02','\u8857','\u8DEF','\u0E16\u0E19\u0E19','\u0E40\u0E21\u0E37\u0E2D\u0E07','\uAC70\uB9AC','\uCE74\uD398','\uB3C4\uC2DC']
+  };
+
+  function jungzigiComment(block, lang) {
+    var c = (block.caption || '').toLowerCase();
+    var cat = 'fallback';
+    var keys = Object.keys(KW);
+    for (var ki = 0; ki < keys.length; ki++) {
+      var arr = KW[keys[ki]];
+      for (var wi = 0; wi < arr.length; wi++) {
+        if (c.indexOf(arr[wi].toLowerCase()) >= 0) { cat = keys[ki]; break; }
+      }
+      if (cat !== 'fallback') break;
+    }
+    // Check for object-related words
+    if (cat === 'fallback') {
+      var objWords = ['old','worn','dent','scar','stain','year','decade','broke','fix','patch','tool','bag','pack','boot','jacket','mat','thermos','eraser','rubber'];
+      for (var oi = 0; oi < objWords.length; oi++) {
+        if (c.indexOf(objWords[oi]) >= 0) { cat = 'object'; break; }
+      }
+    }
+    var jz = getJZ(lang || 'en');
+    var pool = jz[cat] || jz.fallback;
+    var hash = ((block.slotIndex || 1) * 31 + (block.chainId || 0)) % pool.length;
+    return pool[Math.abs(hash)];
+  }
+
+  /* ══════════════════════════════════════════════
+     DOM Helpers
+     ══════════════════════════════════════════════ */
+  var feed;
+
+  function esc(s) {
+    if (!s) return '';
+    var d = document.createElement('span');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html) e.innerHTML = html;
+    return e;
+  }
+
+  function addToFeed(node) {
+    feed.appendChild(node);
+    return node;
+  }
+
+  function showEl(node, delay) {
+    setTimeout(function() { node.classList.add('show'); }, delay || 20);
+  }
+
+  /* ── Bot message ── */
+  function botMsg(html, extraClass) {
+    var m = el('div', 'msg bot' + (extraClass ? ' ' + extraClass : ''), html);
+    return addToFeed(m);
+  }
+
+  /* ── User message ── */
+  function userMsg(html, extraClass) {
+    var m = el('div', 'msg user' + (extraClass ? ' ' + extraClass : ''), html);
+    return addToFeed(m);
+  }
+
+  /* ── Bot typing indicator ── */
+  function typingIndicator() {
+    return botMsg(
+      '<div class="typing-dots"><span></span><span></span><span></span></div>',
+      'typing-msg'
+    );
+  }
+
+  /* ── User typing indicator ── */
+  function userTypingIndicator() {
+    var m = el('div', 'msg user user-typing-msg',
+      '<div class="user-typing-dots"><span></span><span></span><span></span></div>'
+    );
+    return addToFeed(m);
+  }
+
+  /* ── Sender label ── */
+  function senderLabel(name, flag, city) {
+    var lbl = el('div', 'sender-label', flag + ' ' + esc(name) + ' \u00B7 ' + esc(city));
+    return addToFeed(lbl);
+  }
+
+  /* ── Bot label ── */
+  function botLabel(text) {
+    var lbl = el('div', 'bot-label', text || '\uC815(\u60C5) jung-bot');
+    return addToFeed(lbl);
+  }
+
+  /* ── Photo message ── */
+  function photoMsg(photoPath, side, isPortrait) {
+    var m = el('div', 'msg photo-msg ' + side);
+    var wrap = el('div', 'photo-wrap shimmer ' + (isPortrait ? 'portrait' : 'landscape'));
+    var img = document.createElement('img');
+    img.alt = '';
+    img.src = photoPath;
+    img.onerror = function() {
+      this.style.display = 'none';
+      wrap.style.background = 'radial-gradient(ellipse, #1a1918, #0c0c10)';
+      wrap.style.minHeight = '180px';
+    };
+    wrap.appendChild(img);
+    m.appendChild(wrap);
+    return addToFeed(m);
+  }
+
+  function developPhoto(msgEl) {
+    var wrap = msgEl.querySelector('.photo-wrap');
+    if (wrap) wrap.classList.remove('shimmer');
+    var img = msgEl.querySelector('img');
+    if (img) img.classList.add('developed');
+  }
+
+  /* ── System divider ── */
+  function sysDivider(text) {
+    var d = el('div', 'sys-divider',
+      '<div class="sys-divider-line"></div>' +
+      '<div class="sys-divider-text">' + text + '</div>'
+    );
+    return addToFeed(d);
+  }
+
+  /* ── Handoff ── */
+  function handoff(fromFlag, fromCity, toFlag, toCity, slot) {
+    var routeStr = routeFlags.length > 1
+      ? routeFlags.map(function(r) { return r.flag; }).join(' \u2192 ')
+      : '';
+    var h = el('div', 'handoff',
+      '<div class="handoff-label">relay handoff</div>' +
+      '<div class="handoff-cities">' +
+        fromFlag + ' ' + esc(fromCity) +
+        '<span class="handoff-arrow">\u2192</span>' +
+        toFlag + ' ' + esc(toCity) +
+      '</div>' +
+      '<div class="handoff-slot">' + slot + ' / ' + SLOTS + '</div>' +
+      (routeStr ? '<div class="handoff-route">' + routeStr + '</div>' : '')
+    );
+    return addToFeed(h);
+  }
+
+  /* ══════════════════════════════════════════════
+     Typewriter Effect
+     ══════════════════════════════════════════════ */
+  function typeText(msgEl, text, cb) {
+    var span = msgEl.querySelector('.type-target') || msgEl;
+    var cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    cursor.textContent = '\u258C';
+    span.textContent = '';
+    span.appendChild(cursor);
+
+    var chars = Array.from(text);
+    var i = 0;
+    var speed = Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1)));
+
+    function tick() {
+      if (i < chars.length) {
+        span.insertBefore(document.createTextNode(chars[i]), cursor);
+        i++;
+        setTimeout(tick, speed);
+      } else {
+        cursor.classList.add('fade-out');
+        setTimeout(function() {
+          if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+          if (cb) cb();
+        }, 250);
+      }
+    }
+    tick();
+  }
+
+  /* ══════════════════════════════════════════════
+     Step Sequencer
+     ══════════════════════════════════════════════ */
+  function playSequence(steps, cb) {
+    var i = 0;
+    function next() {
+      if (i >= steps.length) { if (cb) cb(); return; }
+      var step = steps[i++];
+      step.run(function() {
+        setTimeout(next, step.wait || 0);
+      });
+    }
+    next();
+  }
+
+  /* ══════════════════════════════════════════════
+     Build Steps: Slot 1 (Origin / New Chain)
+     ══════════════════════════════════════════════ */
+  function buildScheduleHtml() {
+    return '<div class="mission-schedule">' +
+      '<span class="sched-row">Delivery \u00B7 12:00 noon local time</span>' +
+      '</div>';
+  }
+
+  function buildOriginSteps(block, mission, slotGroups) {
+    var steps = [];
+
+    // 0. City divider
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      var divider = sysDivider(block.flag + ' ' + esc(block.city));
+      showEl(divider, 10);
+      autoScroll(divider);
+      done();
+    }});
+
+    // 1. Sender label
+    steps.push({ wait: T.SENDER_LABEL, run: function(done) {
+      var lbl = senderLabel(block.firstName, block.flag, block.city);
+      showEl(lbl, 10);
+      autoScroll(lbl);
+      done();
+    }});
+
+    // 2. User taps "정 만들기" button
+    steps.push({ wait: T.BETWEEN_MSG * 2, run: function(done) {
+      var tap = userMsg(botT('start_new', block.lang), 'user-tap');
+      showEl(tap, 10);
+      autoScroll(tap);
+      done();
+    }});
+
+    // 3. Bot responds: ready to create, send a photo
+    var typingEl;
+    steps.push({ wait: T.TYPING_SHOW, run: function(done) {
+      typingEl = typingIndicator();
+      showEl(typingEl, 10);
+      autoScroll(typingEl);
+      done();
+    }});
+
+    steps.push({ wait: T.TYPING_HOLD, run: function(done) {
+      typingEl.parentNode.removeChild(typingEl);
+      var prompt = botMsg(
+        botT('depart_prompt', block.lang, { name: esc(block.firstName), city: esc(block.city) }).replace(/\n/g, '<br>')
+      );
+      showEl(prompt, 10);
+      autoScroll(prompt);
+      done();
+    }});
+
+    // 4. User "thinking" before taking photo
+    var userTyp1;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp1 = userTypingIndicator();
+      showEl(userTyp1, 10);
+      autoScroll(userTyp1);
+      done();
+    }});
+
+    // 5. Photo upload (user side, portrait for origin)
+    var photoEl;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp1.parentNode.removeChild(userTyp1);
+      photoEl = photoMsg(block.photoPath, 'user', true);
+      showEl(photoEl, 10);
+      autoScroll(photoEl);
+      done();
+    }});
+
+    // 6. Photo develops
+    steps.push({ wait: T.PHOTO_DEVELOP, run: function(done) {
+      developPhoto(photoEl);
+      done();
+    }});
+
+    // 7. Bot: photo received, ask caption
+    var typingEl2;
+    steps.push({ wait: T.TYPING_SHOW, run: function(done) {
+      typingEl2 = typingIndicator();
+      showEl(typingEl2, 10);
+      autoScroll(typingEl2);
+      done();
+    }});
+
+    steps.push({ wait: T.TYPING_HOLD, run: function(done) {
+      typingEl2.parentNode.removeChild(typingEl2);
+      var prompt = botMsg(botT('add_caption', block.lang));
+      showEl(prompt, 10);
+      autoScroll(prompt);
+      done();
+    }});
+
+    // 8. User "typing" caption indicator
+    var userTyp2;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp2 = userTypingIndicator();
+      showEl(userTyp2, 10);
+      autoScroll(userTyp2);
+      done();
+    }});
+
+    // 9. Caption typewriter (user side)
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp2.parentNode.removeChild(userTyp2);
+      var capMsg = userMsg('<span class="type-target"></span>', 'caption-msg');
+      showEl(capMsg, 10);
+      autoScroll(capMsg);
+      setTimeout(function() {
+        typeText(capMsg, block.caption, done);
+      }, 200);
+    }});
+
+    // 8. Bot: validating
+    var valEl;
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      valEl = botMsg(
+        botT('checking', block.lang) +
+        '<span class="checking-dots"><span></span><span></span><span></span></span>',
+        'validating-msg'
+      );
+      showEl(valEl, 10);
+      autoScroll(valEl);
+      done();
+    }});
+
+    // 9. Replace with jungzigi pass
+    steps.push({ wait: T.VALIDATE_HOLD, run: function(done) {
+      valEl.parentNode.removeChild(valEl);
+      var jz = botMsg(
+        '<div class="jz-label">' + botT('moderator', block.lang) + '</div>' +
+        '<div class="jz-comment">' + esc(jungzigiComment(block, block.lang)) + '</div>',
+        'jungzigi-msg'
+      );
+      showEl(jz, 10);
+      autoScroll(jz);
+      done();
+    }});
+
+    // 10. Mission suggestion + buttons
+    if (mission) {
+      steps.push({ wait: T.MISSION_SHOW, run: function(done) {
+        var missionMsg = botMsg(
+          botT('mission_suggest', block.lang) +
+          '<br><br>\u300C' + esc(mission) + '\u300D' +
+          '<div class="mission-buttons">' +
+            '<div class="mission-btn" data-idx="0">' + botT('mission_use', block.lang) + '</div>' +
+            '<div class="mission-btn" data-idx="1">' + botT('mission_write', block.lang) + '</div>' +
+            '<div class="mission-btn" data-idx="2">' + botT('mission_skip', block.lang) + '</div>' +
+          '</div>'
+        );
+        showEl(missionMsg, 10);
+        autoScroll(missionMsg);
+        // Highlight "Accept" after delay
+        setTimeout(function() {
+          var btn = missionMsg.querySelector('[data-idx="0"]');
+          if (btn) btn.classList.add('selected');
+        }, T.MISSION_SELECT);
+        setTimeout(done, T.MISSION_SELECT + 200);
+      }});
+
+      // 11. Confirmation
+      steps.push({ wait: T.CONFIRM_SHOW, run: function(done) {
+        var confirm = botMsg(botT('mission_confirm', block.lang, { mission: esc(mission) }));
+        showEl(confirm, 10);
+        autoScroll(confirm);
+        done();
+      }});
+    }
+
+    // 12. Chain departure
+    steps.push({ wait: T.DEPART_SHOW, run: function(done) {
+      var depart = botMsg(
+        botT('depart', block.lang, { flag: block.flag, city: esc(block.city) })
+      );
+      showEl(depart, 10);
+      autoScroll(depart);
+      routeFlags.push({ flag: block.flag, city: block.city });
+      done();
+    }});
+
+    // 13. Mission reveal interstitial (after everything is set)
+    if (mission) {
+      steps.push({ wait: T.DEPART_SHOW, run: function(done) {
+        var intro = el('div', 'mission-intro',
+          '<div class="mission-label">' + botT('mission_label', block.lang) + '</div>' +
+          '<div class="mission-quote">' + formatMission(mission) + '</div>' +
+          '<div class="mission-meta">' + botT('mission_meta', block.lang, { flag: block.flag, city: esc(block.city) }) + '</div>' +
+          buildScheduleHtml(slotGroups)
+        );
+        addToFeed(intro);
+        requestAnimationFrame(function() { intro.classList.add('reveal'); });
+        autoScroll(intro);
+        done();
+      }});
+    }
+
+    return steps;
+  }
+
+  /* ══════════════════════════════════════════════
+     Build Steps: Slot N (Relay)
+     ══════════════════════════════════════════════ */
+  function buildRelaySteps(block, prevBlock, mission, slotNum) {
+    var steps = [];
+
+    // 1. Handoff interstitial
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      var prev = routeFlags[routeFlags.length - 1] || { flag: '', city: '' };
+      var h = handoff(prev.flag, prev.city, block.flag, block.city, slotNum);
+      showEl(h, 10);
+      autoScroll(h);
+      routeFlags.push({ flag: block.flag, city: block.city });
+      done();
+    }});
+
+    // 2. City divider + sender label
+    steps.push({ wait: T.HANDOFF_HOLD, run: function(done) {
+      var divider = sysDivider(block.flag + ' ' + esc(block.city));
+      showEl(divider, 10);
+
+      var lbl = senderLabel(block.firstName, block.flag, block.city);
+      showEl(lbl, 10);
+      autoScroll(lbl);
+      done();
+    }});
+
+    // 3. Bot: arrival notification
+    steps.push({ wait: T.ARRIVAL_SHOW, run: function(done) {
+      var localMission = getMission(block.lang);
+      var arrival = botMsg(
+        botT('arrived', block.lang, { city: esc(prevBlock ? prevBlock.city : '???'), slot: slotNum }) +
+        (localMission ? '<br><span style="font-size:11px;color:var(--text-dim)">' + botT('mission_sub', block.lang, { mission: esc(localMission) }) + '</span>' : '')
+      );
+      showEl(arrival, 10);
+      autoScroll(arrival);
+      done();
+    }});
+
+    // 4. Show previous block photo+caption (full width, like Telegram)
+    if (prevBlock) {
+      steps.push({ wait: T.ARRIVAL_SHOW, run: function(done) {
+        var prevCard = el('div', 'arrival-card',
+          '<div class="arrival-card-sender">' +
+            prevBlock.flag + ' ' + esc(prevBlock.firstName) + ' \u00B7 ' + esc(prevBlock.city) +
+          '</div>' +
+          '<div class="arrival-card-photo">' +
+            '<img src="' + esc(prevBlock.photoPath) + '" alt=""' +
+            ' onerror="this.style.display=\'none\';this.parentElement.style.background=\'radial-gradient(ellipse,#1a1918,#0c0c10)\';this.parentElement.style.minHeight=\'180px\'">' +
+          '</div>' +
+          '<div class="arrival-card-caption">\u201C' + esc(prevBlock.captionForNext || prevBlock.caption) + '\u201D</div>'
+        );
+        addToFeed(prevCard);
+        showEl(prevCard, 10);
+        autoScroll(prevCard);
+        done();
+      }});
+
+      // 5. Write/Skip buttons
+      steps.push({ wait: T.PREV_HOLD, run: function(done) {
+        var btns = botMsg(
+          '<div class="action-buttons">' +
+            '<div class="action-btn" data-act="write">' + splitBtn(botT('btn_relay', block.lang)) + '</div>' +
+            '<div class="action-btn" data-act="skip">' + splitBtn(botT('btn_skip', block.lang)) + '</div>' +
+          '</div>'
+        );
+        showEl(btns, 10);
+        autoScroll(btns);
+        setTimeout(function() {
+          var w = btns.querySelector('[data-act="write"]');
+          if (w) w.classList.add('selected');
+        }, T.BUTTON_SELECT);
+        setTimeout(done, T.BUTTON_SELECT + 200);
+      }});
+    }
+
+    // 6. Bot: send photo prompt
+    var typingEl;
+    steps.push({ wait: T.TYPING_SHOW, run: function(done) {
+      typingEl = typingIndicator();
+      showEl(typingEl, 10);
+      autoScroll(typingEl);
+      done();
+    }});
+
+    steps.push({ wait: T.TYPING_HOLD, run: function(done) {
+      typingEl.parentNode.removeChild(typingEl);
+      var localMission2 = getMission(block.lang);
+      var sendText = botT('send_photo', block.lang, { slot: slotNum }).replace(/\n/g, '<br>');
+      if (localMission2) {
+        sendText += '<br><br>' + botT('mission_sub', block.lang, { mission: esc(localMission2) });
+      }
+      var prompt = botMsg(sendText);
+      showEl(prompt, 10);
+      autoScroll(prompt);
+      done();
+    }});
+
+    // 7. User "thinking" before photo
+    var userTyp1;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp1 = userTypingIndicator();
+      showEl(userTyp1, 10);
+      autoScroll(userTyp1);
+      done();
+    }});
+
+    // 8. Photo upload (user side)
+    var photoEl;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp1.parentNode.removeChild(userTyp1);
+      photoEl = photoMsg(block.photoPath, 'user', false);
+      showEl(photoEl, 10);
+      autoScroll(photoEl);
+      done();
+    }});
+
+    // 9. Photo develops
+    steps.push({ wait: T.PHOTO_DEVELOP, run: function(done) {
+      developPhoto(photoEl);
+      done();
+    }});
+
+    // 10. Bot: caption prompt
+    var typingEl2;
+    steps.push({ wait: T.TYPING_SHOW, run: function(done) {
+      typingEl2 = typingIndicator();
+      showEl(typingEl2, 10);
+      autoScroll(typingEl2);
+      done();
+    }});
+
+    steps.push({ wait: T.TYPING_HOLD, run: function(done) {
+      typingEl2.parentNode.removeChild(typingEl2);
+      var prompt = botMsg(botT('add_caption', block.lang));
+      showEl(prompt, 10);
+      autoScroll(prompt);
+      done();
+    }});
+
+    // 11. User "typing" caption indicator
+    var userTyp2;
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp2 = userTypingIndicator();
+      showEl(userTyp2, 10);
+      autoScroll(userTyp2);
+      done();
+    }});
+
+    // 12. Caption typewriter
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      userTyp2.parentNode.removeChild(userTyp2);
+      var capMsg = userMsg('<span class="type-target"></span>', 'caption-msg');
+      showEl(capMsg, 10);
+      autoScroll(capMsg);
+      setTimeout(function() {
+        typeText(capMsg, block.caption, done);
+      }, 150);
+    }});
+
+    // 11. Validating
+    var valEl;
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      valEl = botMsg(
+        botT('checking', block.lang) +
+        '<span class="checking-dots"><span></span><span></span><span></span></span>',
+        'validating-msg'
+      );
+      showEl(valEl, 10);
+      autoScroll(valEl);
+      done();
+    }});
+
+    // 12. Jungzigi pass + relay confirmed
+    steps.push({ wait: T.VALIDATE_HOLD, run: function(done) {
+      valEl.parentNode.removeChild(valEl);
+      var jz = botMsg(
+        '<div class="jz-label">' + botT('moderator', block.lang) + '</div>' +
+        '<div class="jz-comment">' + esc(jungzigiComment(block, block.lang)) + '</div>' +
+        '<br>' + botT('relay_confirm', block.lang, { slot: slotNum, total: SLOTS }),
+        'jungzigi-msg'
+      );
+      showEl(jz, 10);
+      autoScroll(jz);
+      done();
+    }});
+
+    return steps;
+  }
+
+  /* ══════════════════════════════════════════════
+     Build Steps: Fork (abbreviated)
+     ══════════════════════════════════════════════ */
+  function buildForkSteps(block) {
+    var steps = [];
+
+    // Fork divider
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      var div = el('div', 'fork-divider',
+        '<span class="fork-divider-text">' + botT('meanwhile', block.lang, { flag: block.flag, city: esc(block.city) }) + '</span>' +
+        '<span class="fork-badge">fork</span>'
+      );
+      addToFeed(div);
+      showEl(div, 10);
+      autoScroll(div);
+      done();
+    }});
+
+    // Sender label
+    steps.push({ wait: T.FORK_DIVIDER, run: function(done) {
+      var lbl = senderLabel(block.firstName, block.flag, block.city);
+      showEl(lbl, 10);
+      done();
+    }});
+
+    // Photo (abbreviated — faster develop)
+    var photoEl;
+    steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
+      photoEl = photoMsg(block.photoPath, 'user', false);
+      showEl(photoEl, 10);
+      autoScroll(photoEl);
+      // Faster develop for fork
+      setTimeout(function() { developPhoto(photoEl); }, 600);
+      done();
+    }});
+
+    // Caption — just show it (no typewriter for fork, faster)
+    steps.push({ wait: T.FORK_PHOTO, run: function(done) {
+      var capMsg = userMsg(esc(block.caption), 'caption-msg');
+      showEl(capMsg, 10);
+      autoScroll(capMsg);
+      done();
+    }});
+
+    // Quick pass
+    steps.push({ wait: T.FORK_CAPTION, run: function(done) {
+      var jz = botMsg(
+        '<div class="jz-label">' + botT('moderator', block.lang) + '</div>' +
+        '<div class="jz-comment">' + esc(jungzigiComment(block, block.lang)) + '</div>',
+        'jungzigi-msg'
+      );
+      showEl(jz, 10);
+      autoScroll(jz);
+      done();
+    }});
+
+    return steps;
+  }
+
+  /* ══════════════════════════════════════════════
+     Group by Slot (same as live-chat)
+     ══════════════════════════════════════════════ */
+  function groupBySlot(tree) {
+    if (!tree || !tree.chains) return [];
+    var map = {};
+    for (var ci = 0; ci < tree.chains.length; ci++) {
+      var chain = tree.chains[ci];
+      for (var bi = 0; bi < chain.blocks.length; bi++) {
+        var b = chain.blocks[bi];
+        // Skip Copy-on-Fork duplicates: fork chain blocks at or before forkSlot are copies
+        if (chain.parentId && chain.forkSlot && b.slotIndex <= chain.forkSlot) continue;
+        if (!map[b.slotIndex]) map[b.slotIndex] = [];
+        map[b.slotIndex].push({
+          slotIndex: b.slotIndex, tzOffset: b.tzOffset,
+          city: b.city, flag: b.flag, firstName: b.firstName,
+          caption: b.caption, lang: b.lang || 'en',
+          captionForNext: b.captionForNext || null,
+          photoPath: b.photoPath,
+          createdAt: b.createdAt, chainId: chain.id,
+          isFork: false // determined after sort
+        });
+      }
+    }
+    var keys = Object.keys(map).map(Number).sort(function(a, b) { return a - b; });
+    return keys.map(function(k) {
+      // Sort by upload time — first written is main, rest are forks
+      var sorted = map[k].sort(function(a, b) {
+        return (a.createdAt || '').localeCompare(b.createdAt || '');
+      });
+      for (var i = 0; i < sorted.length; i++) {
+        sorted[i].isFork = i > 0;
+      }
+      return { slot: k, blocks: sorted };
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     Preload photos
+     ══════════════════════════════════════════════ */
+  function preloadSlotPhotos(sg) {
+    for (var i = 0; i < sg.blocks.length; i++) {
+      var img = new Image();
+      img.src = sg.blocks[i].photoPath;
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     Auto-scroll — 유저 입력 시 OFF, 10초 무입력 시 다시 ON
+     ══════════════════════════════════════════════ */
+  var autoScrollEnabled = true;
+  var scrollResumeTimer = null;
+
+  function autoScroll(target) {
+    if (!target || !autoScrollEnabled) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function onUserScroll() {
+    autoScrollEnabled = false;
+    clearTimeout(scrollResumeTimer);
+    scrollResumeTimer = setTimeout(function() { autoScrollEnabled = true; }, 10000);
+  }
+
+  window.addEventListener('wheel', onUserScroll, { passive: true });
+  window.addEventListener('touchstart', onUserScroll, { passive: true });
+
+  /* ══════════════════════════════════════════════
+     Clear feed
+     ══════════════════════════════════════════════ */
+  function clearFeed(cb) {
+    feed.style.opacity = '0';
+    routeFlags = [];
+    setTimeout(function() {
+      feed.innerHTML = '';
+      feed.style.opacity = '1';
+      window.scrollTo(0, 0);
+      if (cb) cb();
+    }, 550);
+  }
+
+  /* ══════════════════════════════════════════════
+     Tree tabs
+     ══════════════════════════════════════════════ */
+  function renderTabs() {
+    var tabsEl = document.getElementById('treeTabs');
+    tabsEl.innerHTML = '';
+    if (!state || !state.trees || state.trees.length <= 1) {
+      tabsEl.classList.remove('visible');
+      return;
+    }
+    tabsEl.classList.add('visible');
+    for (var i = 0; i < state.trees.length; i++) {
+      (function(idx) {
+        var tab = document.createElement('button');
+        tab.className = 'tree-tab' + (idx === treeIdx ? ' active' : '');
+        tab.textContent = '#' + state.trees[idx].rootId;
+        tab.onclick = function() {
+          if (playing) return;
+          treeIdx = idx;
+          clearTimeout(timer);
+          startTree();
+        };
+        tabsEl.appendChild(tab);
+      })(i);
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     Mission intro
+     ══════════════════════════════════════════════ */
+  function localTime(createdAt, tzOffset) {
+    if (!createdAt) return '';
+    var utc = new Date(createdAt + (createdAt.indexOf('Z') < 0 ? 'Z' : ''));
+    var local = new Date(utc.getTime() + tzOffset * 3600000);
+    var h = local.getUTCHours();
+    var m = local.getUTCMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12 || 12;
+    var mm = m < 10 ? '0' + m : m;
+    var tz = tzOffset >= 0 ? 'UTC+' + tzOffset : 'UTC' + tzOffset;
+    return h12 + ':' + mm + ' ' + ampm + ' (' + tz + ')';
+  }
+
+  function splitBtn(text) {
+    var m = text.match(/^(\S+)\s+(.+)$/);
+    if (m) return '<span class="btn-icon">' + m[1] + '</span><span class="btn-text">' + m[2] + '</span>';
+    return text;
+  }
+
+  function formatMission(text) {
+    var html = esc(text || 'Share a moment');
+    html = html.replace(/빨강/g, '<span class="mq-red">빨강</span>');
+    html = html.replace(/초록/g, '<span class="mq-green">초록</span>');
+    return html;
+  }
+
+  function renderMission(tree, cb) {
+    var intro = el('div', 'mission-intro',
+      '<div class="mission-label">mission</div>' +
+      '<div class="mission-quote">' + formatMission(tree.mission) + '</div>' +
+      '<div class="mission-meta">tree #' + tree.rootId + '</div>'
+    );
+    addToFeed(intro);
+    requestAnimationFrame(function() { intro.classList.add('reveal'); });
+    timer = setTimeout(cb, T.MISSION);
+  }
+
+  /* ══════════════════════════════════════════════
+     End indicator
+     ══════════════════════════════════════════════ */
+  function showEndIndicator() {
+    var end = el('div', 'end-indicator',
+      '<div class="end-dot"></div>' +
+      '<div class="end-text">' + botT('waiting', 'en') + '</div>'
+    );
+    addToFeed(end);
+    autoScroll(end);
+  }
+
+  /* ══════════════════════════════════════════════
+     Main Playback
+     ══════════════════════════════════════════════ */
+  function startTree() {
+    clearTimeout(timer);
+    playing = true;
+    feed = document.getElementById('feed');
+
+    if (!state || !state.trees || !state.trees.length) {
+      document.getElementById('noData').style.display = '';
+      playing = false;
+      return;
+    }
+    document.getElementById('noData').style.display = 'none';
+
+    var tree = state.trees[treeIdx];
+    slotGroups = groupBySlot(tree);
+    currentSlotIdx = 0;
+    currentMission = tree.mission || '';
+    currentMissionI18n = tree.missionI18n || {};
+
+    clearFeed(function() {
+      renderTabs();
+      playNextSlot();
+    });
+  }
+
+  function playNextSlot() {
+    if (currentSlotIdx >= slotGroups.length) {
+      showEndIndicator();
+      playing = false;
+      if (demoMode) {
+        timer = setTimeout(nextDemo, DEMO_NEXT);
+        return;
+      }
+      // Cycle to next tree after pause
+      if (state.trees.length > 1) {
+        timer = setTimeout(function() {
+          treeIdx = (treeIdx + 1) % state.trees.length;
+          startTree();
+        }, T.TREE_PAUSE + 3000);
+      }
+      return;
+    }
+
+    var sg = slotGroups[currentSlotIdx];
+    var isOrigin = currentSlotIdx === 0;
+    var mainBlock = sg.blocks[0];
+
+    // Preload next slot's photos
+    if (currentSlotIdx + 1 < slotGroups.length) {
+      preloadSlotPhotos(slotGroups[currentSlotIdx + 1]);
+    }
+
+    // Find previous block for relay context
+    var prevBlock = null;
+    if (!isOrigin && currentSlotIdx > 0) {
+      var prevSg = slotGroups[currentSlotIdx - 1];
+      // Use main chain block (first non-fork)
+      prevBlock = prevSg.blocks[0];
+    }
+
+    // Build step sequence
+    var steps;
+    if (isOrigin) {
+      steps = buildOriginSteps(mainBlock, currentMission, slotGroups);
+    } else {
+      steps = buildRelaySteps(mainBlock, prevBlock, currentMission, sg.slot);
+    }
+
+    // If this slot has fork blocks, append fork steps
+    for (var fi = 1; fi < sg.blocks.length; fi++) {
+      if (sg.blocks[fi].isFork) {
+        var forkSteps = buildForkSteps(sg.blocks[fi]);
+        steps = steps.concat(forkSteps);
+      }
+    }
+
+    // Play and advance
+    playSequence(steps, function() {
+      currentSlotIdx++;
+      // More breathing room after origin (mission interstitial showing), less for relay
+      var pause = isOrigin ? T.MISSION : T.BETWEEN_MSG * 3;
+      timer = setTimeout(playNextSlot, pause);
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     Demo Mode
+     ══════════════════════════════════════════════ */
+  function startCountdown(seconds) {
+    stopCountdown();
+    var remaining = seconds;
+    var el = document.getElementById('ndCountdown');
+    if (el) el.textContent = 'Demo in ' + remaining + 's';
+    countdownInterval = setInterval(function() {
+      remaining--;
+      if (el) el.textContent = remaining > 0 ? 'Demo in ' + remaining + 's' : '';
+      if (remaining <= 0) stopCountdown();
+    }, 1000);
+  }
+
+  function stopCountdown() {
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+    var el = document.getElementById('ndCountdown');
+    if (el) el.textContent = '';
+  }
+
+  function startDemo() {
+    if (demoMode) return;
+    stopCountdown();
+    demoMode = true;
+    demoIndex = 0;
+    loadDemoChain();
+  }
+
+  function loadDemoChain() {
+    var url = DEMO_CHAINS[demoIndex];
+    fetch(url + '?_=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data || !data.trees || !data.trees.length) { nextDemo(); return; }
+        state = data;
+        treeIdx = 0;
+        startTree();
+      })
+      .catch(function() { nextDemo(); });
+  }
+
+  function nextDemo() {
+    demoIndex++;
+    if (demoIndex >= DEMO_CHAINS.length) {
+      // 모든 체인 완료 → 라이브 대기로 복귀
+      demoMode = false;
+      demoIndex = 0;
+      state = null;
+      treeIdx = 0;
+      clearFeed(function() {
+        document.getElementById('noData').style.display = '';
+        noDataTimer = setTimeout(startDemo, DEMO_WAIT);
+        startCountdown(DEMO_WAIT / 1000);
+      });
+      return;
+    }
+    clearFeed(function() { loadDemoChain(); });
+  }
+
+  /* ══════════════════════════════════════════════
+     Polling
+     ══════════════════════════════════════════════ */
+  function poll() {
+    return fetch('live-relay.json?_=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data || data.updatedAt === lastUpdate) return;
+        // 라이브 데이터 도착 (실제 트리 있을 때만 데모 취소)
+        if (data.trees && data.trees.length) {
+          if (noDataTimer) { clearTimeout(noDataTimer); noDataTimer = null; }
+          stopCountdown();
+          if (demoMode) { demoMode = false; clearTimeout(timer); }
+        }
+        lastUpdate = data.updatedAt;
+        var wasEmpty = !state || !state.trees || !state.trees.length;
+        state = data;
+        if (wasEmpty && state.trees && state.trees.length) {
+          startTree();
+        } else if (!playing && state.trees && state.trees.length) {
+          // Check for new blocks while idle
+          if (treeIdx >= state.trees.length) treeIdx = 0;
+          var tree = state.trees[treeIdx];
+          var newGroups = groupBySlot(tree);
+          if (newGroups.length > slotGroups.length) {
+            slotGroups = newGroups;
+            // Resume playback from where we left off
+            var end = document.querySelector('.end-indicator');
+            if (end) end.parentNode.removeChild(end);
+            playing = true;
+            playNextSlot();
+          }
+          renderTabs();
+        }
+      })
+      .catch(function() {});
+  }
+
+  /* ══════════════════════════════════════════════
+     Init
+     ══════════════════════════════════════════════ */
+  feed = document.getElementById('feed');
+  poll();
+  setInterval(poll, POLL);
+  noDataTimer = setTimeout(startDemo, DEMO_WAIT);
+  startCountdown(DEMO_WAIT / 1000);
+})();
+</script>
+</body>
+</html>
