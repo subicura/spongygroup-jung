@@ -2583,6 +2583,8 @@ body::after {
   setInterval(poll, POLL);
 })();
 </script>
+<style>.swipe-fadein{opacity:0;transition:opacity 0.25s ease}</style>
+<script>document.body.classList.add('swipe-fadein');requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.remove('swipe-fadein')});});</script>
 <style>
 .page-dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:9999;pointer-events:none}
 .page-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.25);transition:background 0.3s}
@@ -2613,7 +2615,7 @@ body::after {
     var dy=e.changedTouches[0].clientY-ty;
     if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.8) return;
     var next=(cur+(dx<0?1:-1)+PAGES.length)%PAGES.length;
-    location.href=PAGES[next];
+    sessionStorage.setItem('swipeNav','1'); location.href=PAGES[next];
   },{passive:true});
 })();
 </script>
