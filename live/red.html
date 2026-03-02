@@ -2441,7 +2441,7 @@ body::after {
     // ?recap → skip chat, jump to slideshow
     if (location.search.indexOf('recap') !== -1) {
       showCompletionSequence(slotGroups, function() {
-        startTree();
+        location.href = 'green.html';
       });
       return;
     }
@@ -2507,7 +2507,7 @@ body::after {
       playSequence(returnSteps, function() {
         setTimeout(function() {
           showCompletionSequence(slotGroups, function() {
-            startTree();
+            location.href = 'green.html';
           });
         }, T.DEPART_SHOW);
       });

@@ -1973,13 +1973,9 @@ body::after {
     if (currentSlotIdx >= slotGroups.length) {
       showEndIndicator();
       playing = false;
-      // Cycle to next tree after pause
-      if (state.trees.length > 1) {
-        timer = setTimeout(function() {
-          treeIdx = (treeIdx + 1) % state.trees.length;
-          startTree();
-        }, T.TREE_PAUSE + 3000);
-      }
+      timer = setTimeout(function() {
+        location.href = 'pet.html';
+      }, T.TREE_PAUSE + 3000);
       return;
     }
 

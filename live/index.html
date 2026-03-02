@@ -939,13 +939,9 @@ body::after {
   var SPEED_MULT = 1.0;
 
   /* Demo mode */
-  var demoMode = false;
-  var demoIndex = 0;
   var noDataTimer = null;
   var countdownInterval = null;
-  var DEMO_CHAINS = ['red-relay.json', 'green-relay.json', 'pet-relay.json'];
-  var DEMO_WAIT  = 30000;  // 30s 대기 후 데모 시작
-  var DEMO_NEXT  = 10000;  // 체인 완료 후 10s 뒤 다음
+  var DEMO_WAIT  = 30000;
 
   function getMission(lang) {
     if (!currentMission) return '';
@@ -2186,10 +2182,6 @@ body::after {
     if (currentSlotIdx >= slotGroups.length) {
       showEndIndicator();
       playing = false;
-      if (demoMode) {
-        timer = setTimeout(nextDemo, DEMO_NEXT);
-        return;
-      }
       // Cycle to next tree after pause
       if (state.trees.length > 1) {
         timer = setTimeout(function() {
@@ -2266,42 +2258,8 @@ body::after {
   }
 
   function startDemo() {
-    if (demoMode) return;
     stopCountdown();
-    demoMode = true;
-    demoIndex = 0;
-    loadDemoChain();
-  }
-
-  function loadDemoChain() {
-    var url = DEMO_CHAINS[demoIndex];
-    fetch(url + '?_=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(data) {
-        if (!data || !data.trees || !data.trees.length) { nextDemo(); return; }
-        state = data;
-        treeIdx = 0;
-        startTree();
-      })
-      .catch(function() { nextDemo(); });
-  }
-
-  function nextDemo() {
-    demoIndex++;
-    if (demoIndex >= DEMO_CHAINS.length) {
-      // 모든 체인 완료 → 라이브 대기로 복귀
-      demoMode = false;
-      demoIndex = 0;
-      state = null;
-      treeIdx = 0;
-      clearFeed(function() {
-        document.getElementById('noData').style.display = '';
-        noDataTimer = setTimeout(startDemo, DEMO_WAIT);
-        startCountdown(DEMO_WAIT / 1000);
-      });
-      return;
-    }
-    clearFeed(function() { loadDemoChain(); });
+    location.href = 'red.html';
   }
 
   /* ══════════════════════════════════════════════
@@ -2316,7 +2274,6 @@ body::after {
         if (data.trees && data.trees.length) {
           if (noDataTimer) { clearTimeout(noDataTimer); noDataTimer = null; }
           stopCountdown();
-          if (demoMode) { demoMode = false; clearTimeout(timer); }
         }
         lastUpdate = data.updatedAt;
         var wasEmpty = !state || !state.trees || !state.trees.length;
@@ -2348,7 +2305,6 @@ body::after {
   feed = document.getElementById('feed');
   poll();
   setInterval(poll, POLL);
-  if (sessionStorage.getItem('swipeNav')) { sessionStorage.removeItem('swipeNav'); DEMO_WAIT = 0; }
   noDataTimer = setTimeout(startDemo, DEMO_WAIT);
   startCountdown(DEMO_WAIT / 1000);
 })();
