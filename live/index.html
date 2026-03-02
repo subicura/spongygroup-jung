@@ -103,6 +103,10 @@ body::after {
   min-height: 85vh; flex-direction: column; gap: 0;
   overflow: hidden; padding: 40px 24px;
 }
+
+#noData { opacity: 0; animation: noDataAppear 0.35s ease 0.3s forwards; }
+@keyframes noDataAppear { to { opacity: 1; } }
+
 /* Character stage */
 .nd-stage {
   display: flex; align-items: baseline; gap: 14px;
