@@ -1522,11 +1522,13 @@ body::after {
   /* ══════════════════════════════════════════════
      Step Sequencer
      ══════════════════════════════════════════════ */
-  // 슬롯별 속도 곡선: 슬롯1=정상 → 중반=최대4x → 마지막=정상
+  // 슬롯별 속도 곡선: 1-2=정상 → 3=급가속 → 22=급감속 → 23-24=정상
   function getSpeedMult(idx, total) {
-    if (total <= 2 || idx === 0) return 1.0;
-    var pos = idx / (total - 1); // 0→1
-    return Math.max(0.22, 1.0 - 0.8 * Math.sin(Math.PI * pos));
+    if (idx <= 1) return 1.0;           // 슬롯 1-2: 정상
+    if (idx >= total - 2) return 1.0;   // 마지막 2슬롯: 정상
+    if (idx === 2) return 0.35;         // 슬롯 3: 가속 진입
+    if (idx === total - 3) return 0.4;  // 슬롯 22: 감속 진입
+    return 0.15;                        // 중간: 최고속 (6-7x)
   }
 
   function playSequence(steps, cb) {
