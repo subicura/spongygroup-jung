@@ -936,7 +936,6 @@ body::after {
   var routeFlags = [];
   var currentMission = '';
   var currentMissionI18n = {};
-  var SPEED_MULT = 1.0;
 
   /* Demo mode */
   var demoMode = false;
@@ -1501,7 +1500,7 @@ body::after {
 
     var chars = Array.from(text);
     var i = 0;
-    var speed = Math.round(Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1))) * SPEED_MULT);
+    var speed = Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1)));
 
     function tick() {
       if (i < chars.length) {
@@ -1522,22 +1521,13 @@ body::after {
   /* ══════════════════════════════════════════════
      Step Sequencer
      ══════════════════════════════════════════════ */
-  // 슬롯별 속도 곡선: 1-2=정상 → 3=급가속 → 22=급감속 → 23-24=정상
-  function getSpeedMult(idx, total) {
-    if (idx <= 1) return 1.0;           // 슬롯 1-2: 정상
-    if (idx >= total - 2) return 1.0;   // 마지막 2슬롯: 정상
-    if (idx === 2) return 0.35;         // 슬롯 3: 가속 진입
-    if (idx === total - 3) return 0.4;  // 슬롯 22: 감속 진입
-    return 0.15;                        // 중간: 최고속 (6-7x)
-  }
-
-  function playSequence(steps, cb) {
+function playSequence(steps, cb) {
     var i = 0;
     function next() {
       if (i >= steps.length) { if (cb) cb(); return; }
       var step = steps[i++];
       step.run(function() {
-        setTimeout(next, (step.wait || 0) * SPEED_MULT);
+        setTimeout(next, step.wait || 0);
       });
     }
     next();
@@ -2218,9 +2208,6 @@ body::after {
       prevBlock = prevSg.blocks[0];
     }
 
-    // 슬롯 속도 곡선 적용
-    SPEED_MULT = getSpeedMult(currentSlotIdx, slotGroups.length);
-
     // Build step sequence
     var steps;
     if (isOrigin) {
@@ -2241,7 +2228,7 @@ body::after {
     playSequence(steps, function() {
       currentSlotIdx++;
       // More breathing room after origin (mission interstitial showing), less for relay
-      var pause = isOrigin ? T.MISSION : Math.round(T.BETWEEN_MSG * 3 * SPEED_MULT);
+      var pause = isOrigin ? T.MISSION : T.BETWEEN_MSG * 3;
       timer = setTimeout(playNextSlot, pause);
     });
   }
