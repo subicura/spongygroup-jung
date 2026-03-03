@@ -2260,7 +2260,7 @@ body::after {
 
   function startDemo() {
     stopCountdown();
-    location.href = 'pet/';
+    location.href = 'demo/pet/';
   }
 
   /* ══════════════════════════════════════════════
@@ -2325,7 +2325,7 @@ body::after {
 </div>
 <script>
 (function(){
-  var PAGES = ['./','pet/','green/','red/'];
+  var PAGES = ['./','demo/pet/','demo/green/','demo/red/'];
   var path = location.pathname.replace(/\/$/, '').split('/').pop() || '';
   var cur = 0;
   if(path==='pet') cur=1;

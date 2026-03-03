@@ -2047,7 +2047,7 @@ body::after {
           city: b.city, flag: b.flag, firstName: b.firstName,
           caption: b.caption, lang: b.lang || 'en',
           captionForNext: b.captionForNext || null,
-          photoPath: b.photoPath,
+          photoPath: '../../' + b.photoPath,
           createdAt: b.createdAt, chainId: chain.id,
           isFork: chain.parentId !== null
         });
@@ -2261,7 +2261,7 @@ body::after {
       var b = allSlotGroups[i].blocks[0];
       slides.push({
         type: 'photo', idx: i,
-        photoPath: b.photoPath, slotIndex: b.slotIndex,
+        photoPath: '../../' + b.photoPath, slotIndex: b.slotIndex,
         city: b.city, flag: b.flag,
         firstName: b.firstName, caption: b.caption || ''
       });
@@ -2442,7 +2442,7 @@ body::after {
     // ?recap → skip chat, jump to slideshow
     if (location.search.indexOf('recap') !== -1) {
       showCompletionSequence(slotGroups, function() {
-        location.href = '../';
+        location.href = '../../';
       });
       return;
     }
@@ -2508,7 +2508,7 @@ body::after {
       playSequence(returnSteps, function() {
         setTimeout(function() {
           showCompletionSequence(slotGroups, function() {
-            location.href = '../';
+            location.href = '../../';
           });
         }, T.DEPART_SHOW);
       });
@@ -2564,7 +2564,7 @@ body::after {
      Polling
      ══════════════════════════════════════════════ */
   function poll() {
-    return fetch('../red-relay.json?_=' + Date.now())
+    return fetch('../../red-relay.json?_=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
         if (!data || data.updatedAt === lastUpdate) return;
@@ -2615,7 +2615,7 @@ body::after {
 </div>
 <script>
 (function(){
-  var PAGES = ['../','../pet/','../green/','../red/'];
+  var PAGES = ['../../','../pet/','../green/','../red/'];
   var path = location.pathname.replace(/\/$/, '').split('/').pop() || '';
   var cur = 0;
   if(path==='pet') cur=1;
