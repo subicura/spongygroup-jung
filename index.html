@@ -73,6 +73,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 #cta .links{margin-top:32px;opacity:0;display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
 #cta .links a{color:rgba(255,255,255,0.3);font-size:17px;text-decoration:none;transition:color 0.3s}
 #cta .links a:hover{color:#5b6fb0}
+#cta .live-link{display:inline-block;margin-top:20px;opacity:0;font-size:15px;color:rgba(255,255,255,0.25);text-decoration:none;letter-spacing:0.5px;transition:color 0.3s}
+#cta .live-link:hover{color:#ec4899}
 #cta .copyright{position:absolute;bottom:24px;left:0;right:0;opacity:0;font-family:"Space Grotesk",sans-serif;font-size:12px;color:rgba(255,255,255,0.15);letter-spacing:1px}
 #cta .footer-line{margin-top:48px;opacity:0;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:rgba(255,255,255,0.2)}
 .cta-animate{animation:cta-rise 2s cubic-bezier(0.16,1,0.3,1) forwards !important}
@@ -130,6 +132,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
   <div class="links">
     <a href="puzzle" target="_blank"  data-i18n="puzzle_link">🧩 정 퍼즐</a>
   </div>
+  <a href="live/" class="live-link" target="_blank" data-i18n="live_link">📡 정 라이브</a>
   <div class="footer-line" data-i18n="footer_tagline">정(情)은 시간이 만든다.</div>
   <div class="copyright">© 2026 SPONGY GROUP</div>
 </div>
@@ -147,6 +150,7 @@ var I18N = {
     "cta_subtitle": "다음은 너야.",
     "cta_button": "정(情) 시작하기",
     "puzzle_link": "🧩 정 퍼즐",
+    "live_link": "📡 정 라이브",
     "footer_tagline": "정(情)은 시간이 만든다.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -157,6 +161,7 @@ var I18N = {
     "cta_subtitle": "You're next.",
     "cta_button": "Start",
     "puzzle_link": "🧩 Puzzle",
+    "live_link": "📡 Live",
     "footer_tagline": "Time creates 정.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -167,6 +172,7 @@ var I18N = {
     "cta_subtitle": "次は、君だ。",
     "cta_button": "始める",
     "puzzle_link": "🧩 パズル",
+    "live_link": "📡 ライブ",
     "footer_tagline": "정は時間が作る。",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -177,6 +183,7 @@ var I18N = {
     "cta_subtitle": "下一个是你。",
     "cta_button": "开始",
     "puzzle_link": "🧩 谜题",
+    "live_link": "📡 直播",
     "footer_tagline": "时间铸就。",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -187,6 +194,7 @@ var I18N = {
     "cta_subtitle": "ต่อไปคือคุณ.",
     "cta_button": "เริ่มต้น",
     "puzzle_link": "🧩 ปริศนา",
+    "live_link": "📡 สด",
     "footer_tagline": "정 สร้างจากเวลา",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -197,6 +205,7 @@ var I18N = {
     "cta_subtitle": "Ahora te toca a ti.",
     "cta_button": "Empezar",
     "puzzle_link": "🧩 Puzle",
+    "live_link": "📡 En vivo",
     "footer_tagline": "정 es obra del tiempo.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -207,6 +216,7 @@ var I18N = {
     "cta_subtitle": "É a sua vez.",
     "cta_button": "Começar",
     "puzzle_link": "🧩 Puzzle",
+    "live_link": "📡 Ao vivo",
     "footer_tagline": "정 se constrói com o tempo.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -217,6 +227,7 @@ var I18N = {
     "cta_subtitle": "À ton tour.",
     "cta_button": "Commencer",
     "puzzle_link": "🧩 Puzzle",
+    "live_link": "📡 En direct",
     "footer_tagline": "정 se tisse avec le temps.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -227,6 +238,7 @@ var I18N = {
     "cta_subtitle": "أنت التالي.",
     "cta_button": "ابدأ",
     "puzzle_link": "🧩 لغز",
+    "live_link": "📡 مباشر",
     "footer_tagline": "정 يصنعه الزمن.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -237,6 +249,7 @@ var I18N = {
     "cta_subtitle": "Твоя очередь.",
     "cta_button": "Начать",
     "puzzle_link": "🧩 Пазл",
+    "live_link": "📡 Прямой эфир",
     "footer_tagline": "정 создается временем.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -247,6 +260,7 @@ var I18N = {
     "cta_subtitle": "Du bist dran.",
     "cta_button": "Starten",
     "puzzle_link": "🧩 Puzzle",
+    "live_link": "📡 Live",
     "footer_tagline": "정, von der Zeit gemacht.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -257,6 +271,7 @@ var I18N = {
     "cta_subtitle": "È il tuo turno.",
     "cta_button": "Inizia",
     "puzzle_link": "🧩 Puzzle",
+    "live_link": "📡 Dal vivo",
     "footer_tagline": "정 nasce dal tempo.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -267,6 +282,7 @@ var I18N = {
     "cta_subtitle": "Sıra sende.",
     "cta_button": "Başla",
     "puzzle_link": "🧩 Yapboz",
+    "live_link": "📡 Canlı",
     "footer_tagline": "정 zamanla oluşur.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -277,6 +293,7 @@ var I18N = {
     "cta_subtitle": "अगली बारी तुम्हारी।",
     "cta_button": "शुरू करें",
     "puzzle_link": "🧩 पहेली",
+    "live_link": "📡 लाइव",
     "footer_tagline": "समय ही 정 बनाता है।",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -287,6 +304,7 @@ var I18N = {
     "cta_subtitle": "Kamu berikutnya.",
     "cta_button": "Mulai",
     "puzzle_link": "🧩 Teka-teki",
+    "live_link": "📡 Langsung",
     "footer_tagline": "정, diciptakan waktu.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -297,6 +315,7 @@ var I18N = {
     "cta_subtitle": "Đến lượt bạn.",
     "cta_button": "Bắt đầu",
     "puzzle_link": "🧩 Ghép hình",
+    "live_link": "📡 Trực tiếp",
     "footer_tagline": "정 được tạo nên bởi thời gian.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
@@ -307,6 +326,7 @@ var I18N = {
     "cta_subtitle": "Наступний ти.",
     "cta_button": "Почати",
     "puzzle_link": "🧩 Пазл",
+    "live_link": "📡 Наживо",
     "footer_tagline": "Час творить 정.",
     "skip_btn": "SKIP →",
     "replay_btn": "↻ Replay"
