@@ -34,9 +34,11 @@
   --green-dim: rgba(220,38,38,0.12);
   --serif: 'DM Serif Display', 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', Georgia, serif;
   --mono: 'JetBrains Mono', 'Noto Sans KR', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
+  --emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
   --sans: 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.ef{font-family:var(--emoji);font-style:normal}
 html, body {
   height: 100%;
   background: var(--bg);
@@ -1365,7 +1367,8 @@ body::after {
     var s = msgs[key] || BOT_I18N.en[key] || key;
     if (params) {
       Object.keys(params).forEach(function(k) {
-        s = s.split('{' + k + '}').join(params[k]);
+        var v = k === 'flag' ? ef(params[k]) : params[k];
+        s = s.split('{' + k + '}').join(v);
       });
     }
     return s;
@@ -1462,7 +1465,7 @@ body::after {
 
   /* ── Sender label ── */
   function senderLabel(name, flag, city) {
-    var lbl = el('div', 'sender-label', flag + ' ' + esc(name) + ' \u00B7 ' + esc(city));
+    var lbl = el('div', 'sender-label', ef(flag) + ' ' + esc(name) + ' \u00B7 ' + esc(city));
     return addToFeed(lbl);
   }
 
@@ -1508,14 +1511,14 @@ body::after {
   /* ── Handoff ── */
   function handoff(fromFlag, fromCity, toFlag, toCity, slot) {
     var routeStr = routeFlags.length > 1
-      ? routeFlags.map(function(r) { return r.flag; }).join(' \u2192 ')
+      ? routeFlags.map(function(r) { return ef(r.flag); }).join(' \u2192 ')
       : '';
     var h = el('div', 'handoff',
       '<div class="handoff-label">relay handoff</div>' +
       '<div class="handoff-cities">' +
-        fromFlag + ' ' + esc(fromCity) +
+        ef(fromFlag) + ' ' + esc(fromCity) +
         '<span class="handoff-arrow">\u2192</span>' +
-        toFlag + ' ' + esc(toCity) +
+        ef(toFlag) + ' ' + esc(toCity) +
       '</div>' +
       '<div class="handoff-slot">' + slot + ' / ' + SLOTS + '</div>' +
       (routeStr ? '<div class="handoff-route">' + routeStr + '</div>' : '')
@@ -1534,7 +1537,16 @@ body::after {
     span.textContent = '';
     span.appendChild(cursor);
 
-    var chars = Array.from(text);
+    var chars = [];
+    var arr = Array.from(text);
+    for (var ci = 0; ci < arr.length; ci++) {
+      var cp = arr[ci].codePointAt(0);
+      if (cp >= 0x1F1E6 && cp <= 0x1F1FF && ci + 1 < arr.length) {
+        var cp2 = arr[ci + 1].codePointAt(0);
+        if (cp2 >= 0x1F1E6 && cp2 <= 0x1F1FF) { chars.push(arr[ci] + arr[ci + 1]); ci++; continue; }
+      }
+      chars.push(arr[ci]);
+    }
     var i = 0;
     var speed = Math.round(Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1))) * SPEED_MULT);
 
@@ -1592,7 +1604,7 @@ body::after {
 
     // 0. City divider
     steps.push({ wait: T.BETWEEN_MSG, run: function(done) {
-      var divider = sysDivider(block.flag + ' ' + esc(block.city));
+      var divider = sysDivider(ef(block.flag) + ' ' + esc(block.city));
       showEl(divider, 10);
       autoScroll(divider);
       done();
@@ -1800,7 +1812,7 @@ body::after {
 
     // 2. City divider + sender label
     steps.push({ wait: T.HANDOFF_HOLD, run: function(done) {
-      var divider = sysDivider(block.flag + ' ' + esc(block.city));
+      var divider = sysDivider(ef(block.flag) + ' ' + esc(block.city));
       showEl(divider, 10);
 
       var lbl = senderLabel(block.firstName, block.flag, block.city);
@@ -1826,7 +1838,7 @@ body::after {
       steps.push({ wait: T.ARRIVAL_SHOW, run: function(done) {
         var prevCard = el('div', 'arrival-card',
           '<div class="arrival-card-sender">' +
-            prevBlock.flag + ' ' + esc(prevBlock.firstName) + ' \u00B7 ' + esc(prevBlock.city) +
+            ef(prevBlock.flag) + ' ' + esc(prevBlock.firstName) + ' \u00B7 ' + esc(prevBlock.city) +
           '</div>' +
           '<div class="arrival-card-photo">' +
             '<img src="' + esc(prevBlock.photoPath) + '" alt=""' +
@@ -2212,7 +2224,7 @@ body::after {
       var stop = document.createElement('span');
       stop.className = 'slide-route-stop';
       stop.setAttribute('data-ri', ri);
-      stop.textContent = cities[ri].flag + ' ' + cities[ri].city;
+      stop.innerHTML = ef(cities[ri].flag) + ' ' + esc(cities[ri].city);
       routeBar.appendChild(stop);
     }
 
@@ -2297,7 +2309,7 @@ body::after {
               '<div class="slide-meta">' +
                 '<span class="slide-meta-left">' +
                   '<span class="slide-meta-author">' + esc(sd.firstName) + '</span>' +
-                  '<span class="slide-meta-city">' + sd.flag + ' ' + esc(sd.city) + '</span>' +
+                  '<span class="slide-meta-city">' + ef(sd.flag) + ' ' + esc(sd.city) + '</span>' +
                 '</span>' +
                 '<span class="slide-meta-slot">' + sd.slotIndex + '/' + SLOTS + '</span>' +
               '</div>' +
@@ -2462,7 +2474,7 @@ body::after {
       done();
     }});
     steps.push({ wait: T.HANDOFF_HOLD, run: function(done) {
-      var divider = sysDivider(firstBlock.flag + ' ' + esc(firstBlock.city));
+      var divider = sysDivider(ef(firstBlock.flag) + ' ' + esc(firstBlock.city));
       showEl(divider, 10);
       var lbl = senderLabel(firstBlock.firstName, firstBlock.flag, firstBlock.city);
       showEl(lbl, 10);
@@ -2484,7 +2496,7 @@ body::after {
     steps.push({ wait: T.ARRIVAL_SHOW, run: function(done) {
       var card = el('div', 'arrival-card',
         '<div class="arrival-card-sender">' +
-          lastBlock.flag + ' ' + esc(lastBlock.firstName) + ' \u00B7 ' + esc(lastBlock.city) +
+          ef(lastBlock.flag) + ' ' + esc(lastBlock.firstName) + ' \u00B7 ' + esc(lastBlock.city) +
         '</div>' +
         '<div class="arrival-card-photo">' +
           '<img src="' + esc(lastBlock.photoPath) + '" alt="">' +

@@ -1296,7 +1296,16 @@ body::after {
     span.textContent = '';
     span.appendChild(cursor);
 
-    var chars = Array.from(text);
+    var chars = [];
+    var arr = Array.from(text);
+    for (var ci = 0; ci < arr.length; ci++) {
+      var cp = arr[ci].codePointAt(0);
+      if (cp >= 0x1F1E6 && cp <= 0x1F1FF && ci + 1 < arr.length) {
+        var cp2 = arr[ci + 1].codePointAt(0);
+        if (cp2 >= 0x1F1E6 && cp2 <= 0x1F1FF) { chars.push(arr[ci] + arr[ci + 1]); ci++; continue; }
+      }
+      chars.push(arr[ci]);
+    }
     var i = 0;
     var speed = Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1)));
 
