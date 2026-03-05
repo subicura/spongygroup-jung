@@ -989,6 +989,7 @@ body::after {
   var routeFlags = [];
   var currentMission = '';
   var currentMissionI18n = {};
+  var currentStartHour = 12;
 
   function getMission(lang) {
     if (!currentMission) return '';
@@ -1592,8 +1593,11 @@ body::after {
      Build Steps: Slot 1 (Origin / New Chain)
      ══════════════════════════════════════════════ */
   function buildScheduleHtml() {
+    var h = currentStartHour % 12 || 12;
+    var ampm = currentStartHour < 12 ? 'AM' : 'PM';
+    var timeStr = h + ':00 ' + ampm;
     return '<div class="mission-schedule">' +
-      '<span class="sched-row">Delivery \u00B7 3:00 PM local time</span>' +
+      '<span class="sched-row">Delivery \u00B7 ' + timeStr + ' local time</span>' +
       '</div>';
   }
 
@@ -2456,6 +2460,7 @@ body::after {
     currentSlotIdx = 0;
     currentMission = tree.mission || '';
     currentMissionI18n = tree.missionI18n || {};
+    currentStartHour = (typeof tree.startHour === 'number') ? tree.startHour : 12;
 
     // ?recap → skip chat, jump to slideshow
     if (location.search.indexOf('recap') !== -1) {
