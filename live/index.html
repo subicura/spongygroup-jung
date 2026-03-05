@@ -2038,7 +2038,7 @@ body::after {
       for (var bi = 0; bi < chain.blocks.length; bi++) {
         var b = chain.blocks[bi];
         // Skip Copy-on-Fork duplicates: fork chain blocks at or before forkSlot are copies
-        if (chain.parentId && chain.forkSlot && b.slotIndex <= chain.forkSlot) continue;
+        if (chain.parentId && chain.forkSlot && b.slotIndex < chain.forkSlot) continue;
         if (!map[b.slotIndex]) map[b.slotIndex] = [];
         map[b.slotIndex].push({
           slotIndex: b.slotIndex, tzOffset: b.tzOffset,
