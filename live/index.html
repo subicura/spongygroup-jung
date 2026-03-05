@@ -1649,6 +1649,7 @@ body::after {
       done();
     }});
 
+    if (block.caption) {
     // 8. User "typing" caption indicator
     var userTyp2;
     steps.push({ wait: T.USER_THINK, run: function(done) {
@@ -1668,6 +1669,15 @@ body::after {
         typeText(capMsg, block.caption, done);
       }, 200);
     }});
+    } else {
+    // 8-9. Caption skipped
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      var skip = userMsg(botT('btn_skip', block.lang), 'user-tap');
+      showEl(skip, 10);
+      autoScroll(skip);
+      done();
+    }});
+    }
 
     // 8. Bot: validating
     var valEl;
@@ -1806,7 +1816,7 @@ body::after {
             '<img src="' + esc(prevBlock.photoPath) + '" alt=""' +
             ' onerror="this.style.display=\'none\';this.parentElement.style.background=\'radial-gradient(ellipse,#1a1918,#0c0c10)\';this.parentElement.style.minHeight=\'180px\'">' +
           '</div>' +
-          '<div class="arrival-card-caption">\u201C' + esc(prevBlock.captionForNext || prevBlock.caption) + '\u201D</div>'
+          ((prevBlock.captionForNext || prevBlock.caption) ? '<div class="arrival-card-caption">\u201C' + esc(prevBlock.captionForNext || prevBlock.caption) + '\u201D</div>' : '')
         );
         addToFeed(prevCard);
         showEl(prevCard, 10);
@@ -1896,6 +1906,7 @@ body::after {
       done();
     }});
 
+    if (block.caption) {
     // 11. User "typing" caption indicator
     var userTyp2;
     steps.push({ wait: T.USER_THINK, run: function(done) {
@@ -1915,6 +1926,15 @@ body::after {
         typeText(capMsg, block.caption, done);
       }, 150);
     }});
+    } else {
+    // 11-12. Caption skipped
+    steps.push({ wait: T.USER_THINK, run: function(done) {
+      var skip = userMsg(botT('btn_skip', block.lang), 'user-tap');
+      showEl(skip, 10);
+      autoScroll(skip);
+      done();
+    }});
+    }
 
     // 11. Validating
     var valEl;
@@ -1983,12 +2003,14 @@ body::after {
     }});
 
     // Caption — just show it (no typewriter for fork, faster)
+    if (block.caption) {
     steps.push({ wait: T.FORK_PHOTO, run: function(done) {
       var capMsg = userMsg(esc(block.caption), 'caption-msg');
       showEl(capMsg, 10);
       autoScroll(capMsg);
       done();
     }});
+    }
 
     // Quick pass
     steps.push({ wait: T.FORK_CAPTION, run: function(done) {
