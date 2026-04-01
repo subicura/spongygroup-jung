@@ -2114,6 +2114,19 @@ body::after {
     if(e.key==='ArrowRight'){var next=(cur+1)%PAGES.length; sessionStorage.setItem('swipeNav','1'); location.href=PAGES[next];}
     if(e.key==='ArrowLeft'){var next=(cur-1+PAGES.length)%PAGES.length; sessionStorage.setItem('swipeNav','1'); location.href=PAGES[next];}
   });
+  var wdx=0,wTimer=null;
+  document.addEventListener('wheel',function(e){
+    if(Math.abs(e.deltaY)>Math.abs(e.deltaX)) return;
+    wdx+=e.deltaX;
+    if(wTimer) clearTimeout(wTimer);
+    wTimer=setTimeout(function(){
+      if(Math.abs(wdx)>80){
+        var next=(cur+(wdx>0?1:-1)+PAGES.length)%PAGES.length;
+        sessionStorage.setItem('swipeNav','1'); location.href=PAGES[next];
+      }
+      wdx=0; wTimer=null;
+    },150);
+  },{passive:true});
 })();
 </script>
 
