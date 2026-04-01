@@ -1575,11 +1575,11 @@ body::after {
      ══════════════════════════════════════════════ */
   // 슬롯별 속도 곡선: 1-2=정상 → 3=급가속 → 마지막2=급감속
   function getSpeedMult(idx, total) {
-    if (idx <= 1) return 1.0;
-    if (idx >= total - 2) return 1.0;
-    if (idx === 2) return 0.35;
-    if (idx === total - 3) return 0.4;
-    return 0.10;
+    if (idx <= 1) return 0.7;
+    if (idx >= total - 2) return 0.7;
+    if (idx === 2) return 0.25;
+    if (idx === total - 3) return 0.28;
+    return 0.07;
   }
 
   function playSequence(steps, cb) {
@@ -2280,7 +2280,7 @@ body::after {
       var b = allSlotGroups[i].blocks[0];
       slides.push({
         type: 'photo', idx: i,
-        photoPath: '../../' + b.photoPath, slotIndex: b.slotIndex,
+        photoPath: b.photoPath, slotIndex: b.slotIndex,
         city: b.city, flag: b.flag,
         firstName: b.firstName, caption: b.caption || ''
       });
@@ -2461,9 +2461,7 @@ body::after {
 
     // ?recap → skip chat, jump to slideshow
     if (location.search.indexOf('recap') !== -1) {
-      showCompletionSequence(slotGroups, function() {
-        location.href = '../../';
-      });
+      showCompletionSequence(slotGroups, function() {});
       return;
     }
 
@@ -2527,9 +2525,7 @@ body::after {
       var returnSteps = buildReturnSteps(lastBlock, firstBlock);
       playSequence(returnSteps, function() {
         setTimeout(function() {
-          showCompletionSequence(slotGroups, function() {
-            location.href = '../../';
-          });
+          showCompletionSequence(slotGroups, function() {});
         }, T.DEPART_SHOW);
       });
       playing = false;

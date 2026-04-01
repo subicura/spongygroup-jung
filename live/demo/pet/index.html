@@ -1556,7 +1556,7 @@ body::after {
       chars.push(arr[ci]);
     }
     var i = 0;
-    var speed = Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1)));
+    var speed = Math.round(Math.min(T.CAPTION_CHAR, Math.floor(T.CAPTION_MAX / Math.max(chars.length, 1))) * SPEED_MULT);
 
     function tick() {
       if (i < chars.length) {
@@ -1577,13 +1577,23 @@ body::after {
   /* ══════════════════════════════════════════════
      Step Sequencer
      ══════════════════════════════════════════════ */
+  var SPEED_MULT = 1.0;
+
+  function getSpeedMult(idx, total) {
+    if (idx <= 1) return 0.7;
+    if (idx >= total - 2) return 0.7;
+    if (idx === 2) return 0.25;
+    if (idx === total - 3) return 0.28;
+    return 0.07;
+  }
+
   function playSequence(steps, cb) {
     var i = 0;
     function next() {
       if (i >= steps.length) { if (cb) cb(); return; }
       var step = steps[i++];
       step.run(function() {
-        setTimeout(next, step.wait || 0);
+        setTimeout(next, (step.wait || 0) * SPEED_MULT);
       });
     }
     next();
@@ -2280,7 +2290,7 @@ body::after {
       var b = allSlotGroups[i].blocks[0];
       slides.push({
         type: 'photo', idx: i,
-        photoPath: '../../' + b.photoPath, slotIndex: b.slotIndex,
+        photoPath: b.photoPath, slotIndex: b.slotIndex,
         city: b.city, flag: b.flag,
         firstName: b.firstName, caption: b.caption || ''
       });
@@ -2464,9 +2474,7 @@ body::after {
 
     // ?recap → skip chat, jump to slideshow
     if (location.search.indexOf('recap') !== -1) {
-      showCompletionSequence(slotGroups, function() {
-        location.href = '../green/';
-      });
+      showCompletionSequence(slotGroups, function() {});
       return;
     }
 
@@ -2534,9 +2542,7 @@ body::after {
       var returnSteps = buildReturnSteps(lastBlock, firstBlock);
       playSequence(returnSteps, function() {
         setTimeout(function() {
-          showCompletionSequence(slotGroups, function() {
-            location.href = '../green/';
-          });
+          showCompletionSequence(slotGroups, function() {});
         }, T.DEPART_SHOW);
       });
       playing = false;
@@ -2580,7 +2586,8 @@ body::after {
     playSequence(steps, function() {
       currentSlotIdx++;
       // More breathing room after origin (mission interstitial showing), less for relay
-      var pause = isOrigin ? T.MISSION : T.BETWEEN_MSG * 3;
+      SPEED_MULT = getSpeedMult(currentSlotIdx, slotGroups.length);
+      var pause = isOrigin ? T.MISSION : Math.round(T.BETWEEN_MSG * 3 * SPEED_MULT);
       timer = setTimeout(playNextSlot, pause);
     });
   }
